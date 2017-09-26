@@ -22,8 +22,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', main.index, name='index'),
     url(r'^login/$', main.login, name='login'),
-    url(r'^logout/$', main.logout, name='logout'),
-    url(r'^account/$', main.account, name='account'),
-    url(r'^transfer/$', main.transfer, name='transfer'),
-    url(r'^exectransfer/$', main.exectransfer, name='exectransfer'),
+    url(r'^matofali/([0-9]+)/$', main.matofali, name='matofali'),
 ]

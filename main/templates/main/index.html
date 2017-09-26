@@ -1,0 +1,58 @@
+{% load static %}
+<html>
+  <head>
+    <title>NyokaTofali | Login</title>
+    <link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}"/>
+    <style>
+      body {
+	background: url('/static/main/images/TSSSBG.jpg') no-repeat center center fixed;
+      }
+      #overview {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+	text-align: center;
+	margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-1"></div>
+	<div class="col-10">
+          <div id="overview">
+            <h1>NyokaTofali</h1>
+	    <div class="row">
+              <div class="col-6">
+	        <h2>Best of Form 1</h2>
+		{% for student in form1 %}
+		  <p>{{ student.name }}</p>
+		{% endfor %}
+	      </div>
+              <div class="col-6">
+                <h2>Best of Form 2</h2> 
+		{% for student in form2 %}
+		  <p>{{ student.name }}</p>
+		{% endfor %}
+	      </div>
+	    </div>
+	    <div>
+		<h2>Play</h2>
+		<h3>Select your name, then press Go.</h3>
+		<form method="post" action="/login/">
+		{% csrf_token %}
+		<select name="student_id">
+		{% for student in all %}
+ 		  <option value="{{ student.id }}">{{ student.name }}</option>
+		{% endfor %}
+		</select>
+		<input type="submit" value="Go"/>
+		</form>
+	    </div>
+          </form>
+	</div>
+	<div class="col-1"></div>
+      </div>
+    </div>
+  </body>
+</html>
