@@ -21,11 +21,20 @@ var terminalOpen = false;
 
 function initBlockly() {
   workspace = Blockly.inject(blockly, {
-    media: "blockly/media/",
+    media: "/static/main/matofali/blockly/media/",
     toolbox: document.getElementById("toolbox")
   });
 
   onresize();
+
+  // Load the student's latest progress.
+  //var blockly_xml = document.getElementById("latest-code").innerHTML;
+  //console.log(blockly_xml);
+  //var textToDom = Blockly.Xml.textToDom(blockly_xml);
+  //console.log(textToDom);
+  Blockly.Xml.domToWorkspace(document.getElementById("latest-code"), workspace);
+  //var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+  //console.log(Blockly.Xml.domToPrettyText(xml));
 }
 
 function changeTab(mode) {
@@ -126,6 +135,8 @@ function initEditor() {
   editor.setReadOnly(true);
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode("ace/mode/python");
+  // Load the student's latest proress.
+  editor.setValue(Blockly.Python.workspaceToCode());
 };
 
 function toggleTerminal(show) {
@@ -147,40 +158,6 @@ function changeTheme(themeName) {
   header.className = classNames + " " + themeName + "-header";
 }
 
-function openCode() {
-  var fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = ".xml";
-  fileInput.addEventListener("change", readSingleFile, false);
-  fileInput.click();
-
-  function readSingleFile(e) {
-    var file = e.target.files[0];
-    if (!file) return;
-
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var contents = e.target.result;
-      gotContents(contents);
-    };
-    reader.readAsText(file);
-  }
-
-  function gotContents(text) {
-    var textToDom = Blockly.Xml.textToDom(text);
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, textToDom);
-    var code = Blockly.Python.workspaceToCode();
-    editor.setValue(code);
-  }
-}
-
-function saveCode() {
-  var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-  var text = Blockly.Xml.domToPrettyText(xml);
-  const io = getIo();
-  io.saveFile(text, "xml", "EduBlocks XML");
-}
-
 function clearTerminal() {
   preLineTerm = null;
   term.value = "";
@@ -188,39 +165,20 @@ function clearTerminal() {
   inp.value = "";
 };
 
-var jengaTaaFuncDef = "def jengaTaa(pos, urefu):\n"
-+ "    if not isinstance(urefu, int):\n"
-+ "        raise Exception('Niliomba namba kwa urefu, lakini ulinipata: ' + str(urefu))\n"
-+ "    urefu = int(urefu)\n"
-+ "    if urefu < 1 or urefu > 3:\n"
-+ "        raise Exception('Ninaomba urefu katikati 1 na 3; ulinipata: ' + str(urefu))\n"
-+ "    mc.setBlock(pos.x + 1, pos.y, pos.z, 69, 5)\n"
-+ "    mc.setBlocks(pos.x + 2, pos.y, pos.z, pos.x + 3, pos.y, pos.z, 55)\n"
-+ "    mc.setBlocks(pos.x + 4, pos.y, pos.z, pos.x + 4, pos.y + urefu - 1, pos.z, 124)\n"
-+ "    mc.setBlock(pos.x + 4, pos.y + urefu, pos.z, 75)\n"
-+ "    print('Taa yenye urefu %d ilijengwa karibu na wewe.' % urefu)\n\n";
-
-var jaribuNambaYaSiriFuncDef = "def jaribuNambaYaSiri(name, pwd):\n"
-+ "     m = {'matt' : '134'}\n"
-+ "     return m[name] == pwd\n";
-
 function sendCode() {
   toggleTerminal(true);
   clearTerminal();
-  var code = Blockly.Python.workspaceToCode();
-  if (code.indexOf("jengaTaa(") != -1) {
-    code = jengaTaaFuncDef + code;
-  }
-  if (code.indexOf("jaribuNambaYaSiri(") != -1) {
-    code = jaribuNambaYaSiriFuncDef + code;
-  }
+  var student_code = Blockly.Python.workspaceToCode();
+  var verify_code = document.getElementById("verify-code").innerText; 
+  var code = student_code + "\n\n" + verify_code;
   ws.send("NT_CODE:" + code);
 };
 
 function getHost() {
-  // MQUINN : If on the central server, access the local laptop's
-  // server instance, NOT the central server's.
-  if (location.host == 'tssslabfileserver') {
+  // MQUINN : Always access local NT backend, none
+  // on server.
+  return "127.0.0.1:8081";
+  /*if (location.host == 'tssslabfileserver') {
     return "127.0.0.1:8081";
   }
 
@@ -230,7 +188,5 @@ function getHost() {
 
   if (location.protocol === "http:") {
     return location.host;
-  }
-
-  return "";
+  }*/
 };

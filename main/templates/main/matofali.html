@@ -51,8 +51,10 @@
 
       <div id="header" class="android-header mdl-layout__header mdl-layout__header--waterfall">
         <div class="mdl-layout__header-row" style="padding: 0;">
-          <h4 style="color: black; padding-left: 5px">NyokaTofali</h4>
-	  <h5 style="color: black;">{{ student.name }}</h5>
+	  <h4 style="color: black; padding-left: 5px">NyokaTofali</h4>
+	  <div style="text-align: center; width: 100%;">
+          <h5 style="color: black;">{{ student.name }} | {{ progress.problem_id.name }}</h5>
+	  </div>
           <!-- Add spacer, to align navigation to the right in desktop -->
           <div class="android-header-spacer mdl-layout-spacer"></div>
 
@@ -186,11 +188,14 @@
                 <block type="return"></block>
                 <block type="getdist"></block> -->
         </category>
-        <category name="Tumaini" colour="#ffa533">
+        <!-- <category name="Tumaini" colour="#ffa533">
           <block type="jengaTaa"></block>
-        </category>
+	</category> -->
     </category>
     </xml>
+
+    <div id="latest-code" style="display: none">{% if not progress.latest_submission %} {{ progress.problem_id.initial_code | safe }} {% else %} {{ progress.latest_submission | safe }} {% endif %}</div>
+    <div id="verify-code" style="display: none">{{ progress.problem_id.verify_code | safe }}</div>
 
     <!-- The script to add blockly to the page. It's a little more complicated
     than the standard blockly one as it makes the blockly div resize as the page
