@@ -123,6 +123,7 @@ function initWebsocket() {
 	var parts = evt.data.split(':');
 	console.log('PASSED TESTS: ' + parts[1]);
 	console.log('TOTAL TESTS: ' + parts[2]);
+	console.log(Blockly.Python.workspaceToCode());
 	// TODO: Send these values, along with code that was run
 	// (in XML form) to central server.
     } else {
