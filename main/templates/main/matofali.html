@@ -53,7 +53,7 @@
         <div class="mdl-layout__header-row" style="padding: 0;">
 	  <h4 style="color: black; padding-left: 5px">NyokaTofali</h4>
 	  <div style="text-align: center; width: 100%;">
-          <h5 style="color: black;">{{ student.name }} | {{ progress.problem_id.name }}</h5>
+		  <h5 style="color: black;"><a href="{% url 'mwanafunzi' student.id %}">{{ student.name }}</a>| {{ progress.problem_id.name }}</h5>
 	  </div>
           <!-- Add spacer, to align navigation to the right in desktop -->
           <div class="android-header-spacer mdl-layout-spacer"></div>

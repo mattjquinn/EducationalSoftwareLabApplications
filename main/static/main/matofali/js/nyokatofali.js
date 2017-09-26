@@ -119,8 +119,16 @@ function initWebsocket() {
 
   ws.onmessage = function(evt) {
     console.log("Received message on WebSocket: " + evt.data);
-    term.value += evt.data;
-    term.scrollTop = term.scrollHeight;
+    if (evt.data.startsWith('NT_VERIFIER_RESULTS:')) {
+	var parts = evt.data.split(':');
+	console.log('PASSED TESTS: ' + parts[1]);
+	console.log('TOTAL TESTS: ' + parts[2]);
+	// TODO: Send these values, along with code that was run
+	// (in XML form) to central server.
+    } else {
+      term.value += evt.data;
+      term.scrollTop = term.scrollHeight;
+    }
   };
 
   ws.onclose = function() {
