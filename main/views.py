@@ -6,13 +6,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Student, Problem, Progress
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Max
+from django.db.models import Max, Sum
 
 def index(request):
   context = {
     'all' : Student.objects.order_by('name'),
-    'top_girls' : Student.objects.filter(gender=Student.FEMALE),
-    'top_boys' : Student.objects.filter(gender=Student.MALE),
+    'top_girls' : Student.objects.filter(gender=Student.FEMALE) \
+            .order_by('-total_pass_percent', 'total_submissions')[:10],
+    'top_boys' : Student.objects.filter(gender=Student.MALE) \
+            .order_by('-total_pass_percent', 'total_submissions')[:10]
   }
   return render(request, 'main/index.html', context)
 
@@ -47,6 +49,17 @@ def changamoto(request, student_id, problem_id):
   }
   return render(request, 'main/changamoto.html', context)
 
+def update_student_rank(student_id):
+    all_progress = Progress.objects.filter(student_id=student_id)
+    total_pass_percent = all_progress\
+            .aggregate(Sum('passed_tests_percent'))['passed_tests_percent__sum']
+    total_submissions = all_progress\
+                .aggregate(Sum('num_submissions'))['num_submissions__sum']
+    student = Student.objects.get(id=student_id)
+    student.total_pass_percent = total_pass_percent
+    student.total_submissions = total_submissions
+    student.save()
+
 @csrf_exempt
 def verifier_update(request):
   if request.method == 'POST':
@@ -68,6 +81,7 @@ def verifier_update(request):
       if progress.passed_tests_percent == 100:
           progress.passed_dtstamp = datetime.now()
       progress.save()
+      update_student_rank(student_id)
       return HttpResponse("SUCCESS: Percent tests passing: " + \
               str(progress.passed_tests_percent))
     except Exception as e:

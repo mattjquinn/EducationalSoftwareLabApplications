@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 
 class Student(models.Model):
     MALE = 'M'
@@ -11,6 +12,8 @@ class Student(models.Model):
     name = models.CharField(max_length=20, blank=False, null=False)
     form = models.IntegerField(blank=False, null=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    total_pass_percent = models.IntegerField(default=0)
+    total_submissions = models.IntegerField(default=0)
     def __str__(self):
         return self.name
 
