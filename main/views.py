@@ -29,13 +29,18 @@ def mwanafunzi(request, student_id):
   student = Student.objects.get(id=student_id)
   if Progress.objects.filter(student_id=student_id,
           passed_tests_percent__lt=100).count() == 0:
-    open_problems = Problem.objects.exclude(id__in =
-            Progress.objects.filter(student_id=student_id))
-    rand_idx = random.randint(0, open_problems.count() - 1)
-    new_problem = Progress.objects.create(
-            student_id=student,
-            problem_id=open_problems[rand_idx])
-    new_problem.save()
+    open_problems = Problem.objects.raw('SELECT * FROM main_problem WHERE \
+            id NOT IN (SELECT problem_id_id FROM main_progress WHERE \
+            student_id_id = %s);' % student_id)
+    num_open = len(list(open_problems))
+    if num_open > 0:
+      rand_idx = random.randint(0, num_open - 1)
+      new_problem = Progress.objects.create(
+              student_id=student,
+              problem_id=open_problems[rand_idx])
+      new_problem.save()
+    else:
+      messages.error(request, 'Hakuna changamoto nyingine.')
   context = {
     'student' : student,
     'progress' : Progress.objects.filter(
