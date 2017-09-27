@@ -35,6 +35,9 @@ function initBlockly() {
   Blockly.Xml.domToWorkspace(document.getElementById("latest-code"), workspace);
   //var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
   //console.log(Blockly.Xml.domToPrettyText(xml));
+  
+  // Show the problem desc when page first loads.
+  $('#problem-description').modal('show');
 }
 
 function changeTab(mode) {
@@ -121,21 +124,26 @@ function initWebsocket() {
     console.log("Received message on WebSocket: " + evt.data);
     if (evt.data.startsWith('NT_VERIFIER_RESULTS:')) {
 	var parts = evt.data.split(':');
+	var testsPassed = parseInt(parts[1].trim());
+	var testsTotal = parseInt(parts[2].trim());
 	var latestCodeDom = Blockly.Xml.workspaceToDom(workspace);
 	var latestCode = Blockly.Xml.domToPrettyText(latestCodeDom);
 	latestCode = $(latestCode).html();
-	console.log('PASSED TESTS: ' + parts[1]);
-	console.log('TOTAL TESTS: ' + parts[2]);
+	console.log('PASSED TESTS: ' + testsPassed);
+	console.log('TOTAL TESTS: ' + testsTotal);
 	console.log('LATEST CODE: ' + latestCode);
 	$.post( "/verifier_update", {
 		student_id: $("#student_id").text(),
 		problem_id: $("#problem_id").text(),
-		tests_passed: parts[1],
-		total_tests: parts[2],
+		tests_passed: testsPassed,
+		total_tests: testsTotal,
 		submitted_code: latestCode
 	}
 	).done(function(data) {
 	  console.log('/verifier_update suceeded with msg: ' + data)
+	  if (testsPassed == testsTotal) {
+	    $('#hongera-message').modal('show');
+	  }
 	})
 	.fail(function(xhr, status, err) {
 	  console.log('/verifier_update failed with msg: ' + err)

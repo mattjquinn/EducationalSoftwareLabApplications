@@ -26,6 +26,7 @@
     <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
 
     <!-- Page styles -->
+    <link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'main/matofali/lib/icon.css' %}">
     <link rel="stylesheet" href="{% static 'main/matofali/lib/material.css' %}">
     <link rel="stylesheet" href="{% static 'main/matofali/css/ui.css' %}">
@@ -42,19 +43,61 @@
     <script src="{% static 'main/matofali/js/block_generators.js' %}"></script>
     <script src="{% static 'main/matofali/js/block_definitions.js' %}"></script>
 
-    <script src="{% static 'main/matofali/lib/FileSaver.js' %}"></script>
-    <script src="{% static 'main/matofali/js/io.js' %}"></script>
     <script src="{% static 'main/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'main/js/popper.js-1.12.5-dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'main/js/bootstrap.min.js' %}"></script>
   </head>
   <body>
+
+  <div id="problem-description" class="modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Changamoto Description</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+	  <p>{{ progress.problem_id.html_desc }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">HAYA BASI</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hongera-message" class="modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">HONGERA</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+	    Umeshinda kutatua changamoto hii. To see your new score,
+	    and to solve the next problem, <a href="{% url 'mwanafunzi' {{ student.idid }}">go here</a>.
+	  </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">SAWA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <div id="websocket-status-bar"></div>
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
       <div id="header" class="android-header mdl-layout__header mdl-layout__header--waterfall">
         <div class="mdl-layout__header-row" style="padding: 0;">
 	  <h4 style="color: black; padding-left: 5px">NyokaTofali</h4>
-	  <div style="text-align: center; width: 100%;">
-		  <h5 style="color: black;"><a href="{% url 'mwanafunzi' student.id %}">{{ student.name }}</a>| {{ progress.problem_id.name }}</h5>
+	  <div style="text-align: center; width: 100%; z-index: 2000;">
+		  <h5 style="color: black;"><a href="{% url 'mwanafunzi' student.id %}">{{ student.name }}</a>| <button id="toggle-problem-dec" class="btn btn-primary" data-toggle="modal" data-target="#problem-description">{{ progress.problem_id.name }}</button></h5>
 	  </div>
           <!-- Add spacer, to align navigation to the right in desktop -->
           <div class="android-header-spacer mdl-layout-spacer"></div>
