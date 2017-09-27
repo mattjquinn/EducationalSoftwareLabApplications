@@ -38,7 +38,7 @@
 		      <td>{{ p.problem_id.name }}</td>
 		      <td>{{ p.passed_tests_percent }}%</td>
 		      <td>
-		        <a href="/matofali/{{ student.id }}/{{ p.problem_id.id }}">
+			      <a href="{% url 'changamoto' student.id p.problem_id.id %}">
 				<button class="btn">OPEN</button>
 			</a>
 		      </td>

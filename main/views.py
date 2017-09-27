@@ -39,13 +39,13 @@ def mwanafunzi(request, student_id):
   }
   return render(request, 'main/mwanafunzi.html', context)
 
-def matofali(request, student_id, problem_id):
+def changamoto(request, student_id, problem_id):
   context = {
     'student' : Student.objects.get(id=student_id),
     'progress' : Progress.objects.get(
         student_id=student_id, problem_id=problem_id)
   }
-  return render(request, 'main/matofali.html', context)
+  return render(request, 'main/changamoto.html', context)
 
 @csrf_exempt
 def verifier_update(request):
