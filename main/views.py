@@ -11,9 +11,11 @@ from django.db.models import Max, Sum
 def index(request):
   context = {
     'all' : Student.objects.order_by('name'),
-    'top_girls' : Student.objects.filter(gender=Student.FEMALE) \
+    'top_girls' : Student.objects.filter(
+            gender=Student.FEMALE,total_pass_percent__gt=0) \
             .order_by('-total_pass_percent', 'total_submissions')[:10],
-    'top_boys' : Student.objects.filter(gender=Student.MALE) \
+    'top_boys' : Student.objects.filter(
+            gender=Student.MALE,total_pass_percent__gt=0) \
             .order_by('-total_pass_percent', 'total_submissions')[:10]
   }
   return render(request, 'main/index.html', context)
