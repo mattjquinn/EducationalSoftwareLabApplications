@@ -34,15 +34,19 @@ def mwanafunzi(request, student_id):
   student = Student.objects.get(id=student_id)
   if Progress.objects.filter(student_id=student_id,
           passed_tests_percent__lt=100).count() == 0:
-    open_problems = Problem.objects.raw('SELECT * FROM main_problem WHERE \
+    # Innermost SELECT: Gets all problem IDs that the student has
+    # already passed.
+    # Next SELECT: Selects only those problems the student HASNT done
+    # and randomly shuffles them.
+    # Outer SELECT: Orders the shuffled problems by level, easiest first.
+    open_problems = Problem.objects.raw('SELECT * FROM (\
+            SELECT * FROM main_problem WHERE \
             id NOT IN (SELECT problem_id_id FROM main_progress WHERE \
-            student_id_id = %s);' % student_id)
-    num_open = len(list(open_problems))
-    if num_open > 0:
-      rand_idx = random.randint(0, num_open - 1)
+            student_id_id = %s) ORDER BY random()) AS a ORDER BY level;' % student_id)
+    if len(list(open_problems)) > 0:
       new_problem = Progress.objects.create(
               student_id=student,
-              problem_id=open_problems[rand_idx])
+              problem_id=open_problems[0])
       new_problem.save()
     else:
       messages.error(request, 'Hakuna changamoto nyingine.')

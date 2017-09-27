@@ -68,6 +68,7 @@
 	    <tr>
 	      <th>#</th>
 	      <th>Changamoto</th>
+	      <th>Level</th>
 	      <th>Pointi</th>
 	      <th>Majaribio</th>
 	      <th></th>
@@ -78,6 +79,7 @@
 	    <tr>
 	      <th scope="row">{{ forloop.counter }}</th>
 	      <td>{{ p.problem_id.name }}</td>
+	      <td>{{ p.problem_id.level }}</td>
 	      <td>{{ p.passed_tests_percent }}</td>
 	      <td>{{ p.num_submissions }}</td>
 	      <td>
