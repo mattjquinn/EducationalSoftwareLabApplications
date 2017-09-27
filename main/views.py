@@ -23,6 +23,11 @@ def index(request):
 def login(request):
   if request.method == 'POST':
     student_id = request.POST.get('student_id', '')
+    try:
+        student = Student.objects.get(id=student_id)
+    except ObjectDoesNotExist:
+        messages.error(request, 'Tafutia jina lako kwanza.')
+        return redirect('index')
     return redirect('/mwanafunzi/' + student_id)
 
 def mwanafunzi(request, student_id):

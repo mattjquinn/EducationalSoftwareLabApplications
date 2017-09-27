@@ -9,13 +9,13 @@ class Student(models.Model):
             (FEMALE, 'Female'),
     )
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=20, blank=False, null=False)
+    name = models.CharField(max_length=50, blank=False, null=False)
     form = models.IntegerField(blank=False, null=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     total_pass_percent = models.IntegerField(default=0)
     total_submissions = models.IntegerField(default=0)
     def __str__(self):
-        return self.name
+        return "%s (Form %d, %s)" % (self.name, self.form, self.gender)
 
 class Problem(models.Model):
     id = models.AutoField(primary_key=True)
