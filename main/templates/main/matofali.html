@@ -196,7 +196,7 @@
     </xml>
 
     <div id="student_id" style="display: none">{{ student.id }}</div>
-    <div id="problem_seqnum" style="display: none">{{ progress.problem_seqnum }}</div>
+    <div id="problem_id" style="display: none">{{ progress.problem_id.id }}</div>
     <div id="latest-code" style="display: none">{% if not progress.latest_submission %} {{ progress.problem_id.initial_code | safe }} {% else %} {{ progress.latest_submission | safe }} {% endif %}</div>
     <div id="verify-code" style="display: none">{{ progress.problem_id.verify_code | safe }}</div>
 

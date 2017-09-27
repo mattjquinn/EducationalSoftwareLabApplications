@@ -34,11 +34,11 @@
 		  <tbody>
 		    {% for p in progress %}
 		    <tr>
-		      <th scope="row">{{ p.problem_seqnum }}</th>
+		      <th scope="row">{{ forloop.counter }}</th>
 		      <td>{{ p.problem_id.name }}</td>
 		      <td>{{ p.passed_tests_percent }}%</td>
 		      <td>
-		        <a href="/matofali/{{ student.id }}/{{ p.problem_seqnum }}">
+		        <a href="/matofali/{{ student.id }}/{{ p.problem_id.id }}">
 				<button class="btn">OPEN</button>
 			</a>
 		      </td>

@@ -25,7 +25,6 @@ class Problem(models.Model):
 
 class Progress(models.Model):
     student_id = models.ForeignKey('Student')
-    problem_seqnum = models.IntegerField(blank=False, unique=False)
     problem_id = models.ForeignKey('Problem')
     latest_submission = models.TextField(blank=True)
     num_submissions = models.IntegerField(default=0)
@@ -33,5 +32,5 @@ class Progress(models.Model):
     started_dtstamp = models.DateTimeField(auto_now_add=True)
     passed_dtstamp = models.DateTimeField(blank=True, null=True)
     def __str__(self):
-        return "P%d for %s" % (self.problem_seqnum, self.student_id)
+        return "P%d for %s" % (self.problem_id, self.student_id)
 

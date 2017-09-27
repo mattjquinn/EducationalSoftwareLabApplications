@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
@@ -5,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Student, Problem, Progress
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Max
 
 def index(request):
   context = {
@@ -20,18 +22,28 @@ def login(request):
     return redirect('/mwanafunzi/' + student_id)
 
 def mwanafunzi(request, student_id):
+  student = Student.objects.get(id=student_id)
+  if Progress.objects.filter(student_id=student_id,
+          passed_tests_percent__lt=100).count() == 0:
+    open_problems = Problem.objects.exclude(id__in =
+            Progress.objects.filter(student_id=student_id))
+    rand_idx = random.randint(0, open_problems.count() - 1)
+    new_problem = Progress.objects.create(
+            student_id=student,
+            problem_id=open_problems[rand_idx])
+    new_problem.save()
   context = {
-    'student' : Student.objects.get(id=student_id),
+    'student' : student,
     'progress' : Progress.objects.filter(
-        student_id=student_id).order_by('problem_seqnum')
+        student_id=student_id).order_by('started_dtstamp')
   }
   return render(request, 'main/mwanafunzi.html', context)
 
-def matofali(request, student_id, problem_seqnum):
+def matofali(request, student_id, problem_id):
   context = {
     'student' : Student.objects.get(id=student_id),
     'progress' : Progress.objects.get(
-        student_id=student_id, problem_seqnum=problem_seqnum)
+        student_id=student_id, problem_id=problem_id)
   }
   return render(request, 'main/matofali.html', context)
 
@@ -40,12 +52,12 @@ def verifier_update(request):
   if request.method == 'POST':
     try:
       student_id = int(request.POST.get('student_id', 0))
-      problem_seqnum = int(request.POST.get('problem_seqnum', 0))
+      problem_id = int(request.POST.get('problem_id', 0))
       tests_passed = int(request.POST.get('tests_passed', 0))
       total_tests = int(request.POST.get('total_tests', 1))
       submitted_code = request.POST.get('submitted_code', '')
       progress = Progress.objects.get(student_id=student_id,
-              problem_seqnum=problem_seqnum)
+              problem_id=problem_id)
       if progress.passed_tests_percent == 100:
         return HttpResponse("SUCCESS: Ignoring verifier update "
                 + "as 100% tests have already been passed.")

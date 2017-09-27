@@ -129,7 +129,7 @@ function initWebsocket() {
 	console.log('LATEST CODE: ' + latestCode);
 	$.post( "/verifier_update", {
 		student_id: $("#student_id").text(),
-		problem_seqnum: $('#problem_seqnum').text(),
+		problem_id: $("#problem_id").text(),
 		tests_passed: parts[1],
 		total_tests: parts[2],
 		submitted_code: latestCode
