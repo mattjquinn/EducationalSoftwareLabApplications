@@ -44,6 +44,7 @@
 
     <script src="{% static 'main/matofali/lib/FileSaver.js' %}"></script>
     <script src="{% static 'main/matofali/js/io.js' %}"></script>
+    <script src="{% static 'main/js/jquery-3.2.1.min.js' %}"></script>
   </head>
   <body>
     <div id="websocket-status-bar"></div>
@@ -194,6 +195,8 @@
     </category>
     </xml>
 
+    <div id="student_id" style="display: none">{{ student.id }}</div>
+    <div id="problem_seqnum" style="display: none">{{ progress.problem_seqnum }}</div>
     <div id="latest-code" style="display: none">{% if not progress.latest_submission %} {{ progress.problem_id.initial_code | safe }} {% else %} {{ progress.latest_submission | safe }} {% endif %}</div>
     <div id="verify-code" style="display: none">{{ progress.problem_id.verify_code | safe }}</div>
 

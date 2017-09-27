@@ -121,11 +121,25 @@ function initWebsocket() {
     console.log("Received message on WebSocket: " + evt.data);
     if (evt.data.startsWith('NT_VERIFIER_RESULTS:')) {
 	var parts = evt.data.split(':');
+	var latestCodeDom = Blockly.Xml.workspaceToDom(workspace);
+	var latestCode = Blockly.Xml.domToPrettyText(latestCodeDom);
+	latestCode = $(latestCode).html();
 	console.log('PASSED TESTS: ' + parts[1]);
 	console.log('TOTAL TESTS: ' + parts[2]);
-	console.log(Blockly.Python.workspaceToCode());
-	// TODO: Send these values, along with code that was run
-	// (in XML form) to central server.
+	console.log('LATEST CODE: ' + latestCode);
+	$.post( "/verifier_update", {
+		student_id: $("#student_id").text(),
+		problem_seqnum: $('#problem_seqnum').text(),
+		tests_passed: parts[1],
+		total_tests: parts[2],
+		submitted_code: latestCode
+	}
+	).done(function(data) {
+	  console.log('/verifier_update suceeded with msg: ' + data)
+	})
+	.fail(function(xhr, status, err) {
+	  console.log('/verifier_update failed with msg: ' + err)
+	});
     } else {
       term.value += evt.data;
       term.scrollTop = term.scrollHeight;

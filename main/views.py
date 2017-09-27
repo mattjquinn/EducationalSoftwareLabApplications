@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Student, Problem, Progress
+from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
   context = {
@@ -32,3 +34,31 @@ def matofali(request, student_id, problem_seqnum):
         student_id=student_id, problem_seqnum=problem_seqnum)
   }
   return render(request, 'main/matofali.html', context)
+
+@csrf_exempt
+def verifier_update(request):
+  if request.method == 'POST':
+    try:
+      student_id = int(request.POST.get('student_id', 0))
+      problem_seqnum = int(request.POST.get('problem_seqnum', 0))
+      tests_passed = int(request.POST.get('tests_passed', 0))
+      total_tests = int(request.POST.get('total_tests', 1))
+      submitted_code = request.POST.get('submitted_code', '')
+      progress = Progress.objects.get(student_id=student_id,
+              problem_seqnum=problem_seqnum)
+      if progress.passed_tests_percent == 100:
+        return HttpResponse("SUCCESS: Ignoring verifier update "
+                + "as 100% tests have already been passed.")
+      progress.latest_submission = submitted_code
+      progress.num_submissions += 1
+      progress.passed_tests_percent = \
+              (float(tests_passed) / float(total_tests)) * 100
+      if progress.passed_tests_percent == 100:
+          progress.passed_dtstamp = datetime.now()
+      progress.save()
+      return HttpResponse("SUCCESS: Percent tests passing: " + \
+              str(progress.passed_tests_percent))
+    except Exception as e:
+      return HttpResponse("Exception: %s" % e)
+  else:
+    return HttpResponse("MUST POST")
