@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_mathjax',
     'main',
 ]
 
@@ -135,3 +136,7 @@ from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
   messages.ERROR: 'danger',
 }
+
+MATHJAX_ENABLED = True
+MATHJAX_LOCAL_PATH = 'main/js/mathjax/'
+

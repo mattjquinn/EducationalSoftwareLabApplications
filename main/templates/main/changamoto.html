@@ -16,6 +16,7 @@
   limitations under the License
 -->
 {% load static %}
+{% load mathjax %}
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -46,6 +47,7 @@
     <script src="{% static 'main/js/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'main/js/popper.js-1.12.5-dist/umd/popper.min.js' %}"></script>
     <script src="{% static 'main/js/bootstrap.min.js' %}"></script>
+    {% mathjax_scripts %}
     <style>
       a:hover {
         text-decoration: none;
@@ -64,7 +66,7 @@
           </button>
         </div>
         <div class="modal-body">
-	  <p>{{ progress.problem_id.html_desc }}</p>
+	  <p>{{ progress.problem_id.html_desc | safe }}</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">HAYA BASI</button>
