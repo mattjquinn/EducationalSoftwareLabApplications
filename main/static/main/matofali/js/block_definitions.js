@@ -638,7 +638,7 @@ Blockly.Blocks['else'] = {
     this.appendStatementInput('DO')
         .appendField('');
     this.setPreviousStatement(true);
-    this.setNextStatement(false);
+    this.setNextStatement(true);
     this.setColour('#3366ff');
     this.setTooltip('Else statement');
     this.setHelpUrl('https://t.co/PCZC5EFe4D');

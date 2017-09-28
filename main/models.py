@@ -25,7 +25,7 @@ class Problem(models.Model):
     initial_code = models.TextField(blank=False, null=False)
     verify_code = models.TextField(blank=False, null=False)
     def __str__(self):
-        return self.name
+        return "%s (Level %d)" % (self.name, self.level)
 
 class Progress(models.Model):
     student_id = models.ForeignKey('Student')
