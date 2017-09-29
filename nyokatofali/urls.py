@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^login/$', main.login, name='login'),
     url(r'^mwanafunzi/([0-9]+)/$', main.mwanafunzi, name='mwanafunzi'),
     url(r'^changamoto/([0-9]+)/([0-9]+)$', main.changamoto, name='changamoto'),
+    url(r'^reset/([0-9]+)/([0-9]+)$', main.reset, name='reset'),
     url(r'^verifier_update$', main.verifier_update, name='verifier_update'),
 ]

@@ -65,6 +65,16 @@ def changamoto(request, student_id, problem_id):
   }
   return render(request, 'main/changamoto.html', context)
 
+# This view resets a student's code if it hasn't yet
+# passed all tests.
+def reset(request, student_id, problem_id):
+  prog = Progress.objects.get(
+        student_id=student_id, problem_id=problem_id)
+  if prog.passed_tests_percent < 100:
+      prog.latest_submission = ''
+      prog.save()
+  return redirect('changamoto', student_id, problem_id)
+
 def update_student_rank(student_id):
     all_progress = Progress.objects.filter(student_id=student_id)
     total_pass_percent = all_progress\
