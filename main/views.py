@@ -63,6 +63,9 @@ def changamoto(request, student_id, problem_id):
     'progress' : Progress.objects.get(
         student_id=student_id, problem_id=problem_id)
   }
+  if context['progress'].passed_tests_percent == 100:
+      messages.error(request, 'You have already solved this problem.')
+      return redirect('mwanafunzi', student_id)
   return render(request, 'main/changamoto.html', context)
 
 # This view resets a student's code if it hasn't yet

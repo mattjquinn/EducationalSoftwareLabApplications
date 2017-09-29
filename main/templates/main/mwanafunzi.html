@@ -83,8 +83,10 @@
 	      <td>{{ p.passed_tests_percent }}</td>
 	      <td>{{ p.num_submissions }}</td>
 	      <td>
+		  {% if p.passed_tests_percent < 100 %}
 		      <a href="{% url 'changamoto' student.id p.problem_id.id %}">
 			<button class="btn btn-primary">FUNGUA</button>
+		  {% endif %}
 		</a>
 	      </td>
 	    </tr>
