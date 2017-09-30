@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', main.index, name='index'),
     url(r'^login/$', main.login, name='login'),
+    url(r'^nyokatofali/$', main.ntredirect, name='ntredirect'),
     url(r'^mwanafunzi/([0-9]+)/$', main.mwanafunzi, name='mwanafunzi'),
     url(r'^changamoto/([0-9]+)/([0-9]+)$', main.changamoto, name='changamoto'),
     url(r'^reset/([0-9]+)/([0-9]+)$', main.reset, name='reset'),

@@ -20,6 +20,13 @@ def index(request):
   }
   return render(request, 'main/index.html', context)
 
+# The original version of nyokatofali was present
+# at /nyokatofali on Nginx on a different server.
+# I am adding this redirect b/c I am too lazy to
+# change the shortcut on all the computers.
+def ntredirect(request):
+    return redirect('index')
+
 def login(request):
   if request.method == 'POST':
     student_id = request.POST.get('student_id', '')
