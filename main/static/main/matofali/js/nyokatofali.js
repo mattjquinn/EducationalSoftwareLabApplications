@@ -132,9 +132,11 @@ function initWebsocket() {
 	console.log('PASSED TESTS: ' + testsPassed);
 	console.log('TOTAL TESTS: ' + testsTotal);
 	console.log('LATEST CODE: ' + latestCode);
+	s_id = $("#student_id").text();
+	p_id = $("#problem_id").text();
 	$.post( "/verifier_update", {
-		student_id: $("#student_id").text(),
-		problem_id: $("#problem_id").text(),
+		student_id: s_id,
+		problem_id: p_id,
 		tests_passed: testsPassed,
 		total_tests: testsTotal,
 		submitted_code: latestCode
@@ -142,7 +144,7 @@ function initWebsocket() {
 	).done(function(data) {
 	  console.log('/verifier_update suceeded with msg: ' + data)
 	  if (testsPassed == testsTotal) {
-	    $('#hongera-message').modal('show');
+	    window.location = "/hongera/" + s_id + "/" + p_id;
 	  }
 	})
 	.fail(function(xhr, status, err) {

@@ -77,6 +77,13 @@ def changamoto(request, student_id, problem_id):
       return redirect('mwanafunzi', student_id)
   return render(request, 'main/changamoto.html', context)
 
+@never_cache
+def hongera(request, student_id, problem_id):
+    prob = Problem.objects.get(id=problem_id)
+    messages.success(request, 'HONGERA. Umeshinda kutatua \
+            changamoto ya %s.' % prob.name);
+    return redirect('mwanafunzi', student_id)
+
 # This view resets a student's code if it hasn't yet
 # passed all tests.
 def reset(request, student_id, problem_id):
@@ -84,6 +91,7 @@ def reset(request, student_id, problem_id):
         student_id=student_id, problem_id=problem_id)
   if prog.passed_tests_percent < 100:
       prog.latest_submission = ''
+      prog.passed_tests_percent = 0
       prog.save()
   return redirect('changamoto', student_id, problem_id)
 

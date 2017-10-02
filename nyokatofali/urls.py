@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^nyokatofali/$', main.ntredirect, name='ntredirect'),
     url(r'^mwanafunzi/([0-9]+)/$', main.mwanafunzi, name='mwanafunzi'),
     url(r'^changamoto/([0-9]+)/([0-9]+)$', main.changamoto, name='changamoto'),
+    url(r'^hongera/([0-9]+)/([0-9]+)$', main.hongera, name='hongera'),
     url(r'^reset/([0-9]+)/([0-9]+)$', main.reset, name='reset'),
     url(r'^verifier_update$', main.verifier_update, name='verifier_update'),
 ]
