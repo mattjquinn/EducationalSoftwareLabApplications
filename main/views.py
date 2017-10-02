@@ -10,14 +10,43 @@ from django.db.models import Max, Sum
 from django.views.decorators.cache import never_cache
 
 def index(request):
+  # NOTE: More total submissions usually indicate
+  # a student was trying independently / didn't just copy
+  # a solution; hence more submissions boost score.
   context = {
     'all' : Student.objects.order_by('name'),
-    'top_girls' : Student.objects.filter(
-            gender=Student.FEMALE,total_pass_percent__gt=0) \
-            .order_by('-total_pass_percent', '-total_submissions'),
-    'top_boys' : Student.objects.filter(
-            gender=Student.MALE,total_pass_percent__gt=0) \
-            .order_by('-total_pass_percent', '-total_submissions')
+    '1a' : Student.objects.filter(form=1, stream='A',\
+            total_pass_percent__gt=0)\
+            .order_by('gender', '-total_first_solves_in_stream',\
+            '-total_pass_percent', '-total_submissions').distinct('gender'),
+    '1b' : Student.objects.filter(form=1, stream='B',\
+            total_pass_percent__gt=0)\
+            .order_by('gender', '-total_first_solves_in_stream',\
+            '-total_pass_percent', '-total_submissions').distinct('gender'),
+    '2a' : Student.objects.filter(form=2, stream='A',\
+            total_pass_percent__gt=0)\
+            .order_by('gender', '-total_first_solves_in_stream',\
+            '-total_pass_percent', '-total_submissions').distinct('gender'),
+    '2b' : Student.objects.filter(form=2, stream='B',\
+            total_pass_percent__gt=0)\
+            .order_by('gender', '-total_first_solves_in_stream',\
+            '-total_pass_percent', '-total_submissions').distinct('gender'),
+    '1a_wote' : Student.objects.filter(form=1, stream='A',\
+            total_pass_percent__gt=0)\
+            .order_by('-total_first_solves_in_stream',\
+            '-total_pass_percent', 'gender', '-total_submissions'),
+    '2a_wote' : Student.objects.filter(form=2, stream='A',\
+            total_pass_percent__gt=0)\
+            .order_by('-total_first_solves_in_stream',\
+            '-total_pass_percent', 'gender', '-total_submissions'),
+    '1b_wote' : Student.objects.filter(form=1, stream='B',\
+            total_pass_percent__gt=0)\
+            .order_by('-total_first_solves_in_stream',\
+            '-total_pass_percent', 'gender', '-total_submissions'),
+    '2b_wote' : Student.objects.filter(form=2, stream='B',\
+            total_pass_percent__gt=0)\
+            .order_by('-total_first_solves_in_stream',\
+            '-total_pass_percent', 'gender', '-total_submissions'),
   }
   return render(request, 'main/index.html', context)
 
@@ -95,17 +124,6 @@ def reset(request, student_id, problem_id):
       prog.save()
   return redirect('changamoto', student_id, problem_id)
 
-def update_student_rank(student_id):
-    all_progress = Progress.objects.filter(student_id=student_id)
-    total_pass_percent = all_progress\
-            .aggregate(Sum('passed_tests_percent'))['passed_tests_percent__sum']
-    total_submissions = all_progress\
-                .aggregate(Sum('num_submissions'))['num_submissions__sum']
-    student = Student.objects.get(id=student_id)
-    student.total_pass_percent = total_pass_percent
-    student.total_submissions = total_submissions
-    student.save()
-
 @csrf_exempt
 def verifier_update(request):
   if request.method == 'POST':
@@ -127,7 +145,7 @@ def verifier_update(request):
       if progress.passed_tests_percent == 100:
           progress.passed_dtstamp = datetime.now()
       progress.save()
-      update_student_rank(student_id)
+      Student.objects.get(id=student_id).update_rank()
       return HttpResponse("SUCCESS: Percent tests passing: " + \
               str(progress.passed_tests_percent))
     except Exception as e:
