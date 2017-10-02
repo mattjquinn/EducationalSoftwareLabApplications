@@ -13,10 +13,10 @@ def index(request):
     'all' : Student.objects.order_by('name'),
     'top_girls' : Student.objects.filter(
             gender=Student.FEMALE,total_pass_percent__gt=0) \
-            .order_by('-total_pass_percent', 'total_submissions')[:10],
+            .order_by('-total_pass_percent', '-total_submissions'),
     'top_boys' : Student.objects.filter(
             gender=Student.MALE,total_pass_percent__gt=0) \
-            .order_by('-total_pass_percent', 'total_submissions')[:10]
+            .order_by('-total_pass_percent', '-total_submissions')
   }
   return render(request, 'main/index.html', context)
 

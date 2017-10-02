@@ -36,5 +36,5 @@ class Progress(models.Model):
     started_dtstamp = models.DateTimeField(auto_now_add=True)
     passed_dtstamp = models.DateTimeField(blank=True, null=True)
     def __str__(self):
-        return "P%d for %s" % (self.problem_id, self.student_id)
+        return "P%d for %s" % (self.problem_id.id, self.student_id)
 
