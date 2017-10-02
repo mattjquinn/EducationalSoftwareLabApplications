@@ -7,6 +7,7 @@ from .models import Student, Problem, Progress
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Sum
+from django.views.decorators.cache import never_cache
 
 def index(request):
   context = {
@@ -64,6 +65,7 @@ def mwanafunzi(request, student_id):
   }
   return render(request, 'main/mwanafunzi.html', context)
 
+@never_cache
 def changamoto(request, student_id, problem_id):
   context = {
     'student' : Student.objects.get(id=student_id),
