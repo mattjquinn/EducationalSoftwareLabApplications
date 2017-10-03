@@ -3,7 +3,10 @@ Blockly.Python['import_edupy'] = function(block) {
   return code;
 };
 
-
+Blockly.Python['break'] = function(block) {
+  var code = 'break\n';
+  return code;
+};
 
 Blockly.Python['pass'] = function(block) {
   var code = 'pass \n';
@@ -487,6 +490,13 @@ Blockly.Python['importinputs'] = function(block) {
 Blockly.Python['return'] = function(block) {
   var text_return = block.getFieldValue('expr');
   var code = 'return ' +text_return+ '\n';
+  return code;
+};
+
+Blockly.Python['funcall'] = function(block) {
+  var funcname = block.getFieldValue('funcname');
+  var funcargs = block.getFieldValue('funcargs');
+  var code = funcname + '(' + funcargs + ')\n';
   return code;
 };
 

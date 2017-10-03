@@ -70,6 +70,33 @@ Blockly.Blocks['return'] = {
   }
 };
 
+Blockly.Blocks['funcall'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput(""), "funcname")
+        .appendField("(")
+        .appendField(new Blockly.FieldTextInput(""), "funcargs")
+        .appendField(")");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#e10303');
+    this.setTooltip('');
+    this.setHelpUrl('');
+  }
+};
+
+Blockly.Blocks['break'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("return");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(336);
+    this.setTooltip('');
+    this.setHelpUrl('');
+  }
+};
+
 Blockly.Blocks['pass'] = {
   init: function() {
     this.appendDummyInput()
