@@ -1,0 +1,8 @@
+For loading new problems from CSV:
+  To dump: $ psql nyokatofali -h localhost -U ntuser \
+    -c "COPY (SELECT * FROM main_problem WHERE level = 4) TO STDOUT;" > output.csv
+  To restore:  $ psql nyokatofali -h localhost -U ntuser \
+    -c "COPY main_problem FROM STDIN;" < output.csv
+  NOTES:
+  - This assumes the rows do not exist in the target db/table.
+  - Existing problems will not be lost when doing this.
