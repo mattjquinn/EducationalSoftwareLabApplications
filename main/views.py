@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Student, Problem, Progress
+from .models import Student, Problem, Progress, AccessWhitelist
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Sum
@@ -62,6 +62,11 @@ def login(request):
     student_id = request.POST.get('student_id', '')
     try:
         student = Student.objects.get(id=student_id)
+        try:
+            AccessWhitelist.objects.get(form=student.form, stream=student.stream)
+        except ObjectDoesNotExist:
+            messages.error(request, "You are not permitted to play at this time.")
+            return redirect('index')
     except ObjectDoesNotExist:
         messages.error(request, 'Tafutia jina lako kwanza.')
         return redirect('index')
@@ -69,6 +74,11 @@ def login(request):
 
 def mwanafunzi(request, student_id):
   student = Student.objects.get(id=student_id)
+  try:
+      AccessWhitelist.objects.get(form=student.form, stream=student.stream)
+  except ObjectDoesNotExist:
+      messages.error(request, "You are not permitted to play at this time.")
+      return redirect('index')
   if Progress.objects.filter(student_id=student_id,
           passed_tests_percent__lt=100).count() == 0:
     # Innermost SELECT: Gets all problem IDs that the student has
@@ -96,8 +106,14 @@ def mwanafunzi(request, student_id):
 
 @never_cache
 def changamoto(request, student_id, problem_id):
+  student = Student.objects.get(id=student_id)
+  try:
+      AccessWhitelist.objects.get(form=student.form, stream=student.stream)
+  except ObjectDoesNotExist:
+      messages.error(request, "You are not permitted to play at this time.")
+      return redirect('index')
   context = {
-    'student' : Student.objects.get(id=student_id),
+    'student' : student,
     'progress' : Progress.objects.get(
         student_id=student_id, problem_id=problem_id)
   }

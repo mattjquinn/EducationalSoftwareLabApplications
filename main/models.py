@@ -77,3 +77,8 @@ class Progress(models.Model):
     def __str__(self):
         return "P%d for %s" % (self.problem_id.id, self.student_id)
 
+class AccessWhitelist(models.Model):
+    form = models.IntegerField()
+    stream = models.CharField(max_length=1)
+    def __str__(self):
+        return "%d%s" % (self.form, self.stream)
