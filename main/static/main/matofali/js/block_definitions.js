@@ -88,10 +88,10 @@ Blockly.Blocks['funcall'] = {
 Blockly.Blocks['break'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("return");
+        .appendField("break");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(336);
+    this.setColour('#3366ff');
     this.setTooltip('');
     this.setHelpUrl('');
   }
