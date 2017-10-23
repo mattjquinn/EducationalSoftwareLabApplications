@@ -19,8 +19,10 @@ class Student(models.Model):
     form = models.IntegerField(blank=False, null=False)
     stream = models.CharField(max_length=1, choices=STREAM_CHOICES)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    total_pass_percent = models.IntegerField(default=0)
     total_submissions = models.IntegerField(default=0)
+    bonus_pass_percent = models.IntegerField(default=0)
+    bonus_first_solves_in_stream = models.IntegerField(default=0)
+    total_pass_percent = models.IntegerField(default=0)
     total_first_solves_in_stream = models.IntegerField(default=0)
 
     def update_rank(self):
@@ -48,9 +50,12 @@ class Student(models.Model):
         row = cursor.fetchone()
         total_first_solves = row[0]
         print("%s %s" % (self.name, total_first_solves))
-      self.total_pass_percent = total_pass_percent
       self.total_submissions = total_submissions
-      self.total_first_solves_in_stream = total_first_solves
+      # IMPORTANT NOTE: the totals below include bonus points.
+      self.total_pass_percent = total_pass_percent \
+              + self.bonus_pass_percent
+      self.total_first_solves_in_stream = total_first_solves \
+              + self.bonus_first_solves_in_stream
       self.save()
 
     def __str__(self):
