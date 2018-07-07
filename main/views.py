@@ -23,27 +23,11 @@ def index(request):
             total_pass_percent__gt=0)\
             .order_by('gender', '-total_first_solves_in_stream',\
             '-total_pass_percent', '-total_submissions').distinct('gender'),
-    '2a' : Student.objects.filter(form=2, stream='A',\
-            total_pass_percent__gt=0)\
-            .order_by('gender', '-total_first_solves_in_stream',\
-            '-total_pass_percent', '-total_submissions').distinct('gender'),
-    '2b' : Student.objects.filter(form=2, stream='B',\
-            total_pass_percent__gt=0)\
-            .order_by('gender', '-total_first_solves_in_stream',\
-            '-total_pass_percent', '-total_submissions').distinct('gender'),
     '1a_wote' : Student.objects.filter(form=1, stream='A',\
             total_pass_percent__gt=0)\
             .order_by('-total_first_solves_in_stream',\
             '-total_pass_percent', 'gender', '-total_submissions'),
-    '2a_wote' : Student.objects.filter(form=2, stream='A',\
-            total_pass_percent__gt=0)\
-            .order_by('-total_first_solves_in_stream',\
-            '-total_pass_percent', 'gender', '-total_submissions'),
     '1b_wote' : Student.objects.filter(form=1, stream='B',\
-            total_pass_percent__gt=0)\
-            .order_by('-total_first_solves_in_stream',\
-            '-total_pass_percent', 'gender', '-total_submissions'),
-    '2b_wote' : Student.objects.filter(form=2, stream='B',\
             total_pass_percent__gt=0)\
             .order_by('-total_first_solves_in_stream',\
             '-total_pass_percent', 'gender', '-total_submissions'),
@@ -86,10 +70,15 @@ def mwanafunzi(request, student_id):
     # Next SELECT: Selects only those problems the student HASNT done
     # and randomly shuffles them.
     # Outer SELECT: Orders the shuffled problems by level, easiest first.
-    open_problems = Problem.objects.raw('SELECT * FROM (\
-            SELECT * FROM main_problem WHERE \
-            id NOT IN (SELECT problem_id_id FROM main_progress WHERE \
-            student_id_id = %s) ORDER BY random()) AS a ORDER BY level;' % student_id)
+    open_problems = Problem.objects.raw(
+      'SELECT * FROM (\
+         SELECT * FROM main_problem \
+         WHERE id NOT IN ( \
+           SELECT problem_id_id FROM main_progress \
+           WHERE student_id_id = %s) \
+         AND enabled = True \
+         ORDER BY random()) \
+       AS a ORDER BY level;' % student_id)
     if len(list(open_problems)) > 0:
       new_problem = Progress.objects.create(
               student_id=student,

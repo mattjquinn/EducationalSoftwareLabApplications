@@ -65,6 +65,7 @@ class Problem(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=False, null=False)
     level = models.IntegerField(blank=False, null=False)
+    enabled = models.BooleanField(default=False)
     html_desc = models.TextField(blank=False, null=False)
     initial_code = models.TextField(blank=False, null=False)
     verify_code = models.TextField(blank=False, null=False)
