@@ -61,8 +61,8 @@
      	</ul>
      	{% endif %}
 
-	    <h1>NyokaTofali</h1>
-	    <div class="container-fluid">
+         <h1>NyokaTofali</h1>
+	  <div class="container-fluid">
 	    <div class="row">
 	      <div class="col-12">
 		<div id="start-area">
@@ -104,29 +104,6 @@
 		</table>
 	      </div>
               <div class="col-6">
-	        <h2>2A Bora</h2>
-		<table class="table table-striped table-inverse">
-		  <thead>
-		    <tr>
-		      <th>Mwanafunzi</th>
-		      <th>Pointi</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    {% for student in 2a %}
-		    <tr>
-		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
-		    </tr>
-		    {% empty %}
-		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 2A ameyepata pointi.</td></tr>
-		    {% endfor %}
-		  </tbody>
-		</table>
-	      </div>
-	    </div>
-	    <div class="row">
-              <div class="col-6">
 	        <h2>1B Bora</h2>
 		<table class="table table-striped table-inverse">
 		  <thead>
@@ -143,27 +120,6 @@
 		    </tr>
 		    {% empty %}
 		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 1B ameyepata pointi.</td></tr>
-		    {% endfor %}
-		  </tbody>
-		</table>
-	      </div>
-              <div class="col-6">
-	        <h2>2B Bora</h2>
-		<table class="table table-striped table-inverse">
-		  <thead>
-		    <tr>
-		      <th>Mwanafunzi</th>
-		      <th>Pointi</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    {% for student in 2b %}
-		    <tr>
-		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
-		    </tr>
-		    {% empty %}
-		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 2B ameyepata pointi.</td></tr>
 		    {% endfor %}
 		  </tbody>
 		</table>
@@ -195,31 +151,6 @@
 		</table>
 	      </div>
               <div class="col-6">
-                <h2>2A Wote</h2> 
-		<table class="table table-striped table-inverse">
-		  <thead>
-		    <tr>
-		      <th>Cheo</th>
-		      <th>Mwanafunzi</th>
-		      <th>Pointi</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    {% for student in 2a_wote %}
-		    <tr>
-		      <th scope="row">{{ forloop.counter }}</th>
-		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
-		    </tr>
-		    {% empty %}
-		      <tr><td colspan="3">Hakuna mtu yeyote wa 2A ameyepata pointi.</td></tr>
-		    {% endfor %}
-		  </tbody>
-		</table>
-	      </div>
-	    </div>
-	    <div class="row">
-              <div class="col-6">
 	        <h2>1B Wote</h2>
 		<table class="table table-striped table-inverse">
 		  <thead>
@@ -242,33 +173,8 @@
 		  </tbody>
 		</table>
 	      </div>
-              <div class="col-6">
-                <h2>2B Wote</h2> 
-		<table class="table table-striped table-inverse">
-		  <thead>
-		    <tr>
-		      <th>Cheo</th>
-		      <th>Mwanafunzi</th>
-		      <th>Pointi</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    {% for student in 2b_wote %}
-		    <tr>
-		      <th scope="row">{{ forloop.counter }}</th>
-		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
-		    </tr>
-		    {% empty %}
-		      <tr><td colspan="3">Hakuna mtu yeyote wa 2B ameyepata pointi.</td></tr>
-		    {% endfor %}
-		  </tbody>
-		</table>
-	      </div>
 	    </div>
-	    </div>
-          </form>
-	</div>
+	  </div>
 	<div class="col-1"></div>
       </div>
     </div>
