@@ -122,8 +122,20 @@ function initWebsocket() {
 
   ws.onmessage = function(evt) {
     console.log("Received message on WebSocket: " + evt.data);
-    if (evt.data.startsWith('NT_VERIFIER_RESULTS:')) {
-	var parts = evt.data.split(':');
+    var verifStartIdx = evt.data.indexOf('NT_VERIFIER_RESULTS');
+    if (verifStartIdx != -1) {
+	// IMPORTANT: The WebSocket may combine data on channel into a single
+	// message, in which case the NT_VERIFIER_RESULTS line could come anywhere
+	// within a message, not necessarily at the end or beginning.
+	var verifLine = evt.data.substring(verifStartIdx);
+	var verifLine = verifLine.substring(0, verifLine.indexOf('\n'));
+
+	// We still want to show the rest of the message, but without
+	// the verification line included.
+	term.value += evt.data.replace(verifLine, '');
+	term.scrollTop = term.scrollHeight;
+
+	var parts = verifLine.split(':');
 	var testsPassed = parseInt(parts[1].trim());
 	var testsTotal = parseInt(parts[2].trim());
 	var latestCodeDom = Blockly.Xml.workspaceToDom(workspace);
