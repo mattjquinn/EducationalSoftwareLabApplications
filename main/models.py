@@ -39,14 +39,14 @@ class Student(models.Model):
       with connection.cursor() as cursor:
         cursor.execute("\
               SELECT COUNT(*) AS total FROM (\
-                SELECT DISTINCT ON (p.problem_id_id)\
-                  s.id, s.name, p.problem_id_id, p.passed_dtstamp\
+                SELECT DISTINCT ON (p.problem_id_id, s.gender)\
+                  s.id, s.name, s.gender, p.problem_id_id, p.passed_dtstamp\
                 FROM main_student AS s, main_progress AS p\
                 WHERE s.id = p.student_id_id\
                   AND p.passed_tests_percent = 100\
                   AND s.form = %d\
                   AND s.stream = '%s'\
-                ORDER BY p.problem_id_id, p.passed_dtstamp) AS subquery\
+                ORDER BY p.problem_id_id, s.gender, p.passed_dtstamp) AS subquery\
               WHERE id = %d;" % (self.form, self.stream, self.id))
         row = cursor.fetchone()
         total_first_solves = row[0]
