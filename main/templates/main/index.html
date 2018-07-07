@@ -95,7 +95,7 @@
 		    {% for student in 1a %}
 		    <tr>
 		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
 		    </tr>
 		    {% empty %}
 		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 1A ameyepata pointi.</td></tr>
@@ -116,7 +116,7 @@
 		    {% for student in 1b %}
 		    <tr>
 		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
 		    </tr>
 		    {% empty %}
 		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 1B ameyepata pointi.</td></tr>
@@ -142,7 +142,7 @@
 		    <tr>
 		      <th scope="row">{{ forloop.counter }}</th>
 		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
 		    </tr>
 		    {% empty %}
 		      <tr><td colspan="3">Hakuna mtu yeyote wa 1A ameyepata pointi.</td></tr>
@@ -165,7 +165,7 @@
 		    <tr>
 		      <th scope="row">{{ forloop.counter }}</th>
 		      <td>{{ student.name }}</td>
-		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
 		    </tr>
 		    {% empty %}
 		      <tr><td colspan="3">Hakuna mtu yeyote wa 1B ameyepata pointi.</td></tr>

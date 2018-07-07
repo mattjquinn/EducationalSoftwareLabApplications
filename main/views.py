@@ -18,19 +18,19 @@ def index(request):
     '1a' : Student.objects.filter(form=1, stream='A',\
             total_pass_percent__gt=0)\
             .order_by('gender', '-total_first_solves_in_stream',\
-            '-total_pass_percent', '-total_submissions').distinct('gender'),
+            '-total_pass_percent', 'motivation_index').distinct('gender'),
     '1b' : Student.objects.filter(form=1, stream='B',\
             total_pass_percent__gt=0)\
             .order_by('gender', '-total_first_solves_in_stream',\
-            '-total_pass_percent', '-total_submissions').distinct('gender'),
+            '-total_pass_percent', 'motivation_index').distinct('gender'),
     '1a_wote' : Student.objects.filter(form=1, stream='A',\
             total_pass_percent__gt=0)\
             .order_by('-total_first_solves_in_stream',\
-            '-total_pass_percent', 'gender', '-total_submissions'),
+            '-total_pass_percent', 'motivation_index', 'gender'),
     '1b_wote' : Student.objects.filter(form=1, stream='B',\
             total_pass_percent__gt=0)\
             .order_by('-total_first_solves_in_stream',\
-            '-total_pass_percent', 'gender', '-total_submissions'),
+            '-total_pass_percent', 'motivation_index', 'gender'),
   }
   return render(request, 'main/index.html', context)
 

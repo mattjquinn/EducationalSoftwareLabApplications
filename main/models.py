@@ -24,6 +24,7 @@ class Student(models.Model):
     bonus_first_solves_in_stream = models.IntegerField(default=0)
     total_pass_percent = models.IntegerField(default=0)
     total_first_solves_in_stream = models.IntegerField(default=0)
+    motivation_index = models.IntegerField(default=0)
 
     def update_rank(self):
       all_progress = Progress.objects.filter(student_id=self.id)
@@ -49,7 +50,27 @@ class Student(models.Model):
               WHERE id = %d;" % (self.form, self.stream, self.id))
         row = cursor.fetchone()
         total_first_solves = row[0]
-        print("%s %s" % (self.name, total_first_solves))
+        cursor.execute("\
+          SELECT SUM(rank) FROM (\
+            SELECT\
+              RANK() OVER(PARTITION BY prog.problem_id_id \
+                          ORDER BY prog.passed_dtstamp) AS rank,\
+              s.name AS student_name, s.id AS student_id, \
+              prob.name, prog.passed_dtstamp\
+              FROM\
+                main_progress AS prog, main_student as s, main_problem as prob\
+              WHERE prog.student_id_id = s.id\
+                AND prog.problem_id_id = prob.id\
+                AND s.form = %d\
+                AND s.stream = '%s'\
+                AND prog.passed_dtstamp IS NOT NULL) AS rankings\
+            WHERE student_id = %d\
+            GROUP BY student_id;" % (self.form, self.stream, self.id))
+        row = cursor.fetchone()
+        self.motivation_index = (0 if row is None or row[0] == None else row[0])
+        print("%s : first_solves=%s, motivation=%s" \
+          % (self.name, total_first_solves, self.motivation_index))
+
       self.total_submissions = total_submissions
       # IMPORTANT NOTE: the totals below include bonus points.
       self.total_pass_percent = total_pass_percent \
