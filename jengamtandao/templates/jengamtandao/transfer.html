@@ -1,0 +1,71 @@
+{% extends 'jengamtandao/base.html' %}
+{% block page_title %} Transfer {% endblock page_title %}
+{% block inline_css %}
+.row {
+  padding: 20px;
+}
+h2 {
+  font-weight: bold;
+}
+h3 {
+  font-size: 1.3em;
+}
+{% endblock inline_css %}
+{% block main_content %}
+<h1>Transfer Funds</h1>
+<!-- NOTE: onkeypress below disables use of Enter button to submit form. -->
+<form action="/exectransfer/" method="post" onkeypress="return event.keyCode != 13;">
+{% csrf_token %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h2>Recipient</h2>
+      <h3>Enter the Client ID of the person you wish to transfer to.</h3>
+   </div>
+   <div class="col">
+      <br/><br/>
+      <input name="recipient_client_id" type="text"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <h2>Amount</h2>
+      <h3>Enter the amount you wish to transfer (your current account balance is {{ client.acct_balance_tzs }} TZS).</h3>
+    </div>
+    <div class="col">
+      <br/><br/>
+      <input name="amount_to_transfer" style="width: 110px;" type="text"/><span>&nbsp;&nbsp;TZS</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col"></div>
+    <div id="transfer-btn" class="col">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#pwdModal">BEGIN TRANSFER</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="pwdModal" tabindex="-1" role="dialog" aria-labelledby="pwdModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pwdModalLabel">Password Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	      <p>For security purposes, please enter the password for account <strong>{{ client.username }}</strong>.</p>
+	<input name="password" type="password"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+        <input type="submit" class="btn btn-primary" value="SUBMIT"/>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+{% endblock main_content %}
