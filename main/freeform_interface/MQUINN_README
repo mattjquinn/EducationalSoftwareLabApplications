@@ -1,0 +1,10 @@
+This directory is the `ui` directory of the
+forked EduBlocks project, customized to allow free-form
+programs in NyokaTofali outside of competition mode.
+Although it lives inside the encompassing Django project,
+it is just a collection of static files and is therefore
+aliased directly from the nginx configuration file.
+
+ALSO NOTE: Many of the files in this directory are not needed,
+but instead are relics from when the project was tightly coupled
+with the nodejs/yarn backend.
