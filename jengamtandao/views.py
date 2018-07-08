@@ -135,7 +135,7 @@ def submit_code(request):
   if request.method == 'POST':
     try:
       instructor_pwd_hash = request.POST.get('instructor_pwd_hash', '')
-      if instructor_pwd_hash != 'f1db37815cb37bc21dba16975088c09582f9cd31190f2dc6cc21d7e1542cd069':
+      if instructor_pwd_hash != '6ae51c9997858052f953b634d0636679661d52140a6ece5cbe6321f8efcf48b6':
           return HttpResponseServerError('Incorrect password.');
       student_id = int(request.POST.get('student_id', 0))
       problem_id = int(request.POST.get('problem_id', 0))
