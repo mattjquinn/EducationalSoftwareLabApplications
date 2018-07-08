@@ -83,8 +83,8 @@ class Problem(models.Model):
         return "%s (Level %d)" % (self.name, self.level)
 
 class Progress(models.Model):
-    student_id = models.ForeignKey('Student')
-    problem_id = models.ForeignKey('Problem')
+    student_id = models.ForeignKey('Student', on_delete=models.CASCADE)
+    problem_id = models.ForeignKey('Problem', on_delete=models.CASCADE)
     latest_submission = models.TextField(blank=True)
     passed = models.BooleanField(default=False)
     started_dtstamp = models.DateTimeField(auto_now_add=True)
