@@ -7,7 +7,7 @@ SELECT COUNT(*) AS total FROM (
   SELECT DISTINCT ON (p.problem_id_id)
     s.id, s.name, p.problem_id_id, p.passed_dtstamp
   FROM
-    main_student AS s, main_progress AS p
+    nyokatofali_student AS s, nyokatofali_progress AS p
   WHERE
     s.id = p.student_id_id
     AND p.passed_tests_percent = 100
