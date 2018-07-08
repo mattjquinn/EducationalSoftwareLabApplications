@@ -43,11 +43,11 @@ def login(request):
             AccessWhitelist.objects.get(form=student.form, stream=student.stream)
         except ObjectDoesNotExist:
             messages.error(request, "You are not permitted to play at this time.")
-            return redirect('index')
+            return redirect('nt.index')
     except ObjectDoesNotExist:
         messages.error(request, 'Tafutia jina lako kwanza.')
-        return redirect('index')
-    return redirect(reverse('mwanafunzi', args=[student_id]))
+        return redirect('nt.index')
+    return redirect(reverse('nt.mwanafunzi', args=[student_id]))
 
 def mwanafunzi(request, student_id):
   student = Student.objects.get(id=student_id)
@@ -55,7 +55,7 @@ def mwanafunzi(request, student_id):
       AccessWhitelist.objects.get(form=student.form, stream=student.stream)
   except ObjectDoesNotExist:
       messages.error(request, "You are not permitted to play at this time.")
-      return redirect('index')
+      return redirect('nt.index')
   if Progress.objects.filter(student_id=student_id,
           passed_tests_percent__lt=100).count() == 0:
     # Innermost SELECT: Gets all problem IDs that the student has
@@ -93,7 +93,7 @@ def changamoto(request, student_id, problem_id):
       AccessWhitelist.objects.get(form=student.form, stream=student.stream)
   except ObjectDoesNotExist:
       messages.error(request, "You are not permitted to play at this time.")
-      return redirect('index')
+      return redirect('nt.index')
   context = {
     'student' : student,
     'progress' : Progress.objects.get(
@@ -101,7 +101,7 @@ def changamoto(request, student_id, problem_id):
   }
   if context['progress'].passed_tests_percent == 100:
       messages.error(request, 'You have already solved this problem.')
-      return redirect(reverse('mwanafunzi', args=[student_id]))
+      return redirect(reverse('nt.mwanafunzi', args=[student_id]))
   return render(request, 'nyokatofali/changamoto.html', context)
 
 @never_cache
@@ -109,7 +109,7 @@ def hongera(request, student_id, problem_id):
     prob = Problem.objects.get(id=problem_id)
     messages.success(request, 'HONGERA. Umeshinda kutatua \
             changamoto ya %s.' % prob.name);
-    return redirect(reverse('mwanafunzi', args=[student_id]))
+    return redirect(reverse('nt.mwanafunzi', args=[student_id]))
 
 # This view resets a student's code if it hasn't yet
 # passed all tests.
@@ -120,7 +120,7 @@ def reset(request, student_id, problem_id):
       prog.latest_submission = ''
       prog.passed_tests_percent = 0
       prog.save()
-  return redirect(reverse('changamoto', args=[student_id, problem_id]))
+  return redirect(reverse('nt.changamoto', args=[student_id, problem_id]))
 
 @csrf_exempt
 def verifier_update(request):
