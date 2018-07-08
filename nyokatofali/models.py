@@ -95,8 +95,8 @@ class Problem(models.Model):
         return "%s (Level %d)" % (self.name, self.level)
 
 class Progress(models.Model):
-    student_id = models.ForeignKey('Student')
-    problem_id = models.ForeignKey('Problem')
+    student_id = models.ForeignKey('Student', on_delete=models.CASCADE)
+    problem_id = models.ForeignKey('Problem', on_delete=models.CASCADE)
     latest_submission = models.TextField(blank=True)
     num_submissions = models.IntegerField(default=0)
     passed_tests_percent = models.IntegerField(default=0)
