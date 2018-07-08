@@ -80,7 +80,7 @@
       <div id="header" class="android-header mdl-layout__header mdl-layout__header--waterfall">
         <div class="mdl-layout__header-row" style="padding: 0;">
 	  <div style="text-align: left; padding-left: 5px; width: 100%; z-index: 2000;">
-	    <h5 style="color: black;"><a href="{% url 'mwanafunzi' student.id %}">{{ student.name }}</a>&nbsp;|&nbsp;<button id="toggle-problem-dec" class="btn btn-primary" data-toggle="modal" data-target="#problem-description">{{ progress.problem_id.name }}</button></h5>
+	    <h5 style="color: black;"><a href="{% url 'nt.mwanafunzi' student.id %}">{{ student.name }}</a>&nbsp;|&nbsp;<button id="toggle-problem-dec" class="btn btn-primary" data-toggle="modal" data-target="#problem-description">{{ progress.problem_id.name }}</button></h5>
 	  </div>
           <!-- Add spacer, to align navigation to the right in desktop -->
           <div class="android-header-spacer mdl-layout-spacer"></div>
