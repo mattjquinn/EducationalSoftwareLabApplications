@@ -8,6 +8,7 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max, Sum
 from django.views.decorators.cache import never_cache
+from django.db import connections
 
 def index(request):
   context = {
@@ -79,6 +80,23 @@ def mwanafunzi(request, student_id):
   }
   return render(request, 'hifadhidata/mwanafunzi.html', context)
 
+def process_qs(cursor):
+    # TODO: Handle no columns / rows situation
+    l = [tuple(col[0] for col in cursor.description)]
+    html = '<table class="table table-striped">'
+    html += '<thead><tr>'
+    for col in cursor.description:
+        html += '<th>' + col[0] + '</th>'
+    html += '</tr></thead><tbody>'
+    for row in cursor.fetchall():
+        l.append(tuple(str(col) for col in row))
+        html += '<tr>'
+        for col in row:
+            html += '<td>' + str(col) + '</td>'
+        html += '</tr>'
+    html += '</tbody></table>'
+    return (html, l)
+
 @never_cache
 def changamoto(request, student_id, problem_id):
   student = Student.objects.get(id=student_id)
@@ -87,10 +105,22 @@ def changamoto(request, student_id, problem_id):
   except ObjectDoesNotExist:
       messages.error(request, "You are not permitted to play at this time.")
       return redirect('hd.index')
+
+  # TODO: Get table list from changamato record
+  cursor = connections['hifadhidata'].cursor()
+  html = ""
+  for table in ['sayari']:
+     cursor.execute('SELECT * FROM ' + table)
+     qshtml, qslist = process_qs(cursor)
+     html += '<h1>' + table + '<span class="tbl-info">(' + str(len(cursor.description)) + ' columns, ' + str(cursor.rowcount) + ' rows)</span></h1>'
+     html += qshtml
+
   context = {
     'student' : student,
     'progress' : Progress.objects.get(
-        student_id=student_id, problem_id=problem_id)
+        student_id=student_id, problem_id=problem_id),
+    'navcolor' : "%06x" % random.randint(0, 0xFFFFFF),
+    'tables_html' : html,
   }
   if context['progress'].passed == True:
       messages.error(request, 'You have already solved this problem.')
@@ -130,27 +160,42 @@ def save_code(request):
   else:
       return HttpResponseServerError("ERROR: MUST POST")
 
+
 @csrf_exempt
-def submit_code(request):
+def run_code(request):
   if request.method == 'POST':
     try:
-      instructor_pwd_hash = request.POST.get('instructor_pwd_hash', '')
-      if instructor_pwd_hash != '6ae51c9997858052f953b634d0636679661d52140a6ece5cbe6321f8efcf48b6':
-          return HttpResponseServerError('Incorrect password.');
       student_id = int(request.POST.get('student_id', 0))
       problem_id = int(request.POST.get('problem_id', 0))
+      submitted_code = request.POST.get('code', '')
+
+      # Run the query; return column names + succeeding records
+      cursor = connections['hifadhidata'].cursor()
+      cursor.execute(submitted_code)
+      qshtml, qslist = process_qs(cursor)
+
+      # Update progress
       progress = Progress.objects.get(student_id=student_id,
               problem_id=problem_id)
       if progress.passed == True:
         return HttpResponse("SUCCESS: Ignoring submission, already passed.")
-      submitted_code = request.POST.get('submitted_code', '')
       progress.latest_submission = submitted_code
-      progress.passed = True
-      progress.passed_dtstamp = datetime.now()
+
+      # Check solution.
+      #TODO: Implement exact equality to solution (for ordered queries)
+      cursor.execute(progress.problem_id.answer_sql)
+      _, qsanswerList= process_qs(cursor)
+      if qslist == qsanswerList:
+          qsresp = 'PASS|' + qshtml
+          progress.passed = True
+          progress.passed_dtstamp = datetime.now()
+      else:
+          qsresp = 'FAIL|' + qshtml
+
       progress.save()
       Student.objects.get(id=student_id).update_rank()
-      return HttpResponse("SUCCESS: Submission marked as passing.")
+      return HttpResponse(qsresp)
     except Exception as e:
-      return HttpResponseServerError("EXCEPTION: %s" % e)
+      return HttpResponseServerError("SQL error: %s" % e)
   else:
       return HttpResponseServerError("ERROR: MUST POST")

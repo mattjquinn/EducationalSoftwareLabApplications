@@ -90,6 +90,16 @@ DATABASES = {
         'PASSWORD': 'lauser',
         'HOST': 'localhost',
         'PORT': '5432',
+    },
+    # Hifadhidata supporting tables are stored in a separate
+    # database to prevent students from accessing core tables.
+    'hifadhidata': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'hifadhidata',
+        'USER': 'hduser',
+        'PASSWORD': 'hduser',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
