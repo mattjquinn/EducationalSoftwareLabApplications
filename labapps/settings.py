@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'welcome',
     'nyokatofali',
     'jengamtandao',
+    'hifadhidata',
 ]
 
 MIDDLEWARE = [

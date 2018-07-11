@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^$', include('welcome.urls')),
     url(r'^nyokatofali/', include('nyokatofali.urls')),
     url(r'^jengamtandao/', include('jengamtandao.urls')),
+    url(r'^hifadhidata/', include('hifadhidata.urls')),
 ]

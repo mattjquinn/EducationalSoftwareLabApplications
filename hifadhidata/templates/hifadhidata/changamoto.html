@@ -1,0 +1,294 @@
+{% load static %}
+{% load mathjax %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Hifadhidata</title>
+
+    <link rel="stylesheet" href="{% static 'hifadhidata/css/bootstrap.min.css' %}">
+
+    <script src="{% static 'hifadhidata/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'hifadhidata/js/popper.js-1.12.5-dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'hifadhidata/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'hifadhidata/js/sha256.min.js' %}"></script>
+
+    <style>
+      #editor {
+	position: absolute;
+	top: 0;
+	right: 50%;
+	bottom: 55px;
+	left: 0;
+	z-index: 0;
+      }
+      iframe#rendering {
+	position: absolute;
+	width: 50%;
+	height: 100%;
+	top: 0;
+	right: 0;
+	background-color: white;
+	z-index: 100;
+	border: none;
+	box-shadow: -5px 0px 11px -4px rgba(0,0,0,0.68);
+      }
+      iframe#goal {
+	position: absolute;
+	width: 50%;
+	height: 94%;
+	top: 0;
+	left: 0;
+	background-color: white;
+	z-index: 40;
+	border: none;
+	display: none;
+      }
+      a:hover {
+        text-decoration: none;
+      }
+      nav {
+        position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 50%;
+	height: 50px;
+	background-color: #b1ff47;
+	z-index: 50;
+	box-shadow: 2px -5px 11px -4px rgba(0,0,0,0.68);
+	padding: 5px;
+	background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
+      }
+      nav > span {
+        float: left;
+	font-size: 22px;
+	margin-left: 10px;
+	background-color: rgba(255, 255, 255, 0.6);
+	padding: 3px 10px;
+	border-radius: 5px;
+	font-weight: bold;
+      }
+      nav > div {
+        float: right;
+      }
+      nav > div > * {
+        margin: 0 5px;
+      }
+   </style> 
+  </head>
+  <body>
+
+    <div id="editor">{% if not progress.latest_submission %}{{ progress.problem_id.initial_code }}{% else %}{{ progress.latest_submission.strip }}{% endif %}</div>
+    <iframe id="rendering"></iframe>
+    <iframe id="goal"></iframe>
+
+    <nav>
+      <span><a href="{% url 'hd.mwanafunzi' student.id %}">{{ student.name }}</a></span>
+      <div>
+        <button id="goal-toggle" type="button" class="btn btn-secondary">SHOW GOAL</button>
+        <button id="save-code" type="button" class="btn btn-secondary">SAVE</button>
+        <button id="submit-code" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#submitModal">SUBMIT</button>
+      </div>
+    </nav>
+
+    <div id="student_id" style="display: none">{{ student.id }}</div>
+    <div id="problem_id" style="display: none">{{ progress.problem_id.id }}</div>
+    <div id="goal-html-code" style="display: none">{{ progress.problem_id.goal_code }}</div>
+
+    <div id="codeSubmitErrorModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Submission Failed</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+	    Your submission was rejected, either due to an incorrect instructor password or a server error.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="htmlErrorsModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Your HTML Contains Errors</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+	    Your code has one or more errors marked by red Xs; you must fix these before you can submit.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="saveSuccessModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Successfully Saved</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+	    Your code was saved successfully.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="submitModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Submit Your Code</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+	    <label for="instructor-pwd" class="form-control-label">Instructor Password</label>
+	    <input type="password" class="form-control" id="instructor-pwd">
+          </div>
+          <div class="modal-footer">
+            <button id="instructor-submit" type="button" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'hifadhidata/ace_1.3.1_src-min-noconflict/ace.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script>
+      var editor = ace.edit("editor");
+      editor.setTheme("Chrome");
+      editor.session.setMode('ace/mode/html');
+      editor.getSession().setUseWrapMode(true);
+      editor.setFontSize(16);
+      // Prevent students from directly pasting code into editor.
+      editor.onCopy = editor.onCut = editor.onPaste = editor.getCopyText = function() { return "" }
+      // On text change, update live rendering.
+      editor.getSession().on('change', function() {
+        updateHTMLRendering();
+      });
+
+      function updateHTMLRendering() {
+	var html = editor.getSession().getValue();
+	var doc = document.getElementById('rendering').contentWindow.document;
+	doc.open();
+	doc.write(html);
+	doc.close();
+      };
+
+      function saveCodeToServer(successFn, errorFn) {
+	var s_id = $('#student_id').text();
+	var p_id = $('#problem_id').text();
+	var latest_code = editor.getValue();
+	$.post('/hifadhidata/save_code', {
+	  student_id: s_id,
+	  problem_id: p_id,
+	  latest_code: latest_code
+	}).done(successFn)
+	  .fail(errorFn)
+      };
+
+      $(document).ready(function() {
+
+	// Update the rendering with the intially loaded code.
+      	updateHTMLRendering();
+
+	// Load the goal rendering into the hidden iframe.
+	var goal = $('#goal-html-code').text();
+	var doc = document.getElementById('goal').contentWindow.document;
+	doc.open();
+	doc.write(unescape(goal));
+	doc.close();
+      });
+
+      $('button#goal-toggle').click(function() {
+        $('iframe#goal').fadeToggle();
+	$(this).text(function(i, text){
+	  return text === "SHOW GOAL" ? "HIDE GOAL" : "SHOW GOAL";
+	});
+	editor.focus();
+      });
+
+      $('button#save-code').click(function() {
+	saveCodeToServer(function(data) {
+	  console.log('Save code request succeeded with msg: ' + data);
+	  $('#saveSuccessModal').modal('show');
+	}, function(xhr, status, err) {
+	  console.log('Save code attempt failed with msg: ' + xhr.responseText);
+	  alert('An error occurred while saving your code; please tell your teacher.');
+	});
+      });
+
+      $('button#submit-code').click(function() {
+	var annot = editor.getSession().getAnnotations();
+	for (a of annot) {
+	  if (a.type == 'error') {
+	    $('#htmlErrorsModal').modal('show');
+	    return false;
+	  }
+	}
+	// If no errors, return true to allow instructor pwd modal to appear.
+	return true;
+      });
+
+      var submitCodeToServer = function() {
+	var pwd = $('#instructor-pwd').val();
+	var pwd_hash = sha256(pwd);
+	var s_id = $('#student_id').text();
+	var p_id = $('#problem_id').text();
+	var latest_code = editor.getValue();
+	$.post('/hifadhidata/submit_code', {
+	  instructor_pwd_hash: pwd_hash,
+	  student_id: s_id,
+	  problem_id: p_id,
+	  submitted_code: latest_code
+	}).done(function(data){
+	   console.log('Code submission succeeded with msg: ' + data);
+	   window.location = "/hifadhidata/hongera/" + s_id + "/" + p_id;	   
+	}).fail(function(xhr, status, err) {
+	   console.log('Code submission failed with msg: ' + xhr.responseText);
+
+	   $('#submitModal').modal('hide');
+	   $('#codeSubmitErrorModal').modal('show');
+	});
+      };
+
+      $('button#instructor-submit').click(submitCodeToServer);
+      $('#submitModal').keypress(function(e) {
+        if(e.which == 13) {
+	  submitCodeToServer();
+	}
+       });
+
+      // Autosave code every 30 seconds.
+      setInterval(function() {
+        saveCodeToServer(function(data) {
+    	    console.log('Autosave code request succeeded with msg: ' + data);
+          }, function(xhr, status, err) {
+	    console.log('Save code attempt failed with msg: ' + xhr.responseText);
+          });
+      }, 30000);
+	  
+    </script>
+  </body>
+</html>
