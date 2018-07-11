@@ -1,0 +1,184 @@
+{% load static %}
+<html>
+  <head>
+    <title>Hifadhidata | Start</title>
+    <link rel="stylesheet" href="{% static 'hifadhidata/css/bootstrap.min.css' %}"/>
+    <style>
+      body {
+	background: url('/static/hifadhidata/images/serverroombg.jpg') no-repeat center center fixed;
+	background-size: cover;
+	padding-bottom: 80px;
+      }
+      #overview {
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+	text-align: center;
+	margin-top: 30px;
+	min-height: 700px;
+	padding: 20px;
+      }
+      table th, table tr {
+        text-align: center;
+      }
+      h2 {
+	background-color: rgba(255, 255, 255, 0.4);
+	width: 80%;
+	margin: 10px auto;
+	padding: 10px;
+	border-radius: 10px;
+	font-size: 1.8em;
+	font-weight: bold;
+      }
+      h1 {
+        font-weight: bold;
+	font-size: 2em;
+	padding-top: 10px;
+      }
+      #start-area {
+       background-color: rgba(255, 255, 255, 0.6);
+       width: 500px;
+       margin: 20px auto;
+       padding: 10px 5px;
+       box-shadow: inset 0 0 10px #000000;
+      } 
+      .messages {
+	width: 80%;
+	margin: 0 auto;
+	padding-top: 20px;	
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-1"></div>
+	<div class="col-10">
+          <div id="overview">
+
+     	{% if messages %}
+     	<ul class="messages">
+     	    {% for message in messages %}
+     	    <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</div>
+     	    {% endfor %}
+     	</ul>
+     	{% endif %}
+
+	  <div class="container-fluid">
+	    <div class="row">
+	      <div class="col-12">
+		<div id="start-area">
+	    	  <h1>Hifadhidata</h1>
+		  <form method="post" action="{% url 'hd.login' %}">
+		  {% csrf_token %}
+		  <br/>
+		  <select name="student_id">
+		    <option value="-1">Jina...</option>
+		  {% for student in all %}
+ 		    <option value="{{ student.id }}">{{ student.name }}</option>
+		  {% endfor %}
+		  </select>
+		  <input type="submit" value="Nenda"/>
+  		  </form>
+		</div>
+	      </div>
+	    </div>
+	    <div class="row">
+              <div class="col-6">
+	        <h2>2A Bora</h2>
+		<table class="table table-striped table-inverse">
+		  <thead>
+		    <tr>
+		      <th>Mwanafunzi</th>
+		      <th>Pointi</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    {% for student in 2a %}
+		    <tr>
+		      <td>{{ student.name }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
+		    </tr>
+		    {% empty %}
+		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 2A ameyepata pointi.</td></tr>
+		    {% endfor %}
+		  </tbody>
+		</table>
+	      </div>
+              <div class="col-6">
+	        <h2>2B Bora</h2>
+		<table class="table table-striped table-inverse">
+		  <thead>
+		    <tr>
+		      <th>Mwanafunzi</th>
+		      <th>Pointi</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    {% for student in 2b %}
+		    <tr>
+		      <td>{{ student.name }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
+		    </tr>
+		    {% empty %}
+		      <tr><td colspan="3">Hakuna mtu yeyote wa Form 2B ameyepata pointi.</td></tr>
+		    {% endfor %}
+		  </tbody>
+		</table>
+	      </div>
+	    </div>
+	    <hr/>
+	    <div class="row">
+              <div class="col-6">
+	        <h2>2A Wote</h2>
+		<table class="table table-striped table-inverse">
+		  <thead>
+		    <tr>
+		      <th>Cheo</th>
+		      <th>Mwanafunzi</th>
+		      <th>Pointi</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    {% for student in 2a_wote %}
+		    <tr>
+		      <th scope="row">{{ forloop.counter }}</th>
+		      <td>{{ student.name }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
+		    </tr>
+		    {% empty %}
+		      <tr><td colspan="3">Hakuna mtu yeyote wa 2A ameyepata pointi.</td></tr>
+		    {% endfor %}
+		  </tbody>
+		</table>
+	      </div>
+              <div class="col-6">
+                <h2>2B Wote</h2> 
+		<table class="table table-striped table-inverse">
+		  <thead>
+		    <tr>
+		      <th>Cheo</th>
+		      <th>Mwanafunzi</th>
+		      <th>Pointi</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    {% for student in 2b_wote %}
+		    <tr>
+		      <th scope="row">{{ forloop.counter }}</th>
+		      <td>{{ student.name }}</td>
+		      <td>{{ student.total_first_solves_in_stream }}|{{ student.total_pass_percent }}|{{ student.motivation_index }}</td>
+		    </tr>
+		    {% empty %}
+		      <tr><td colspan="3">Hakuna mtu yeyote wa 2B ameyepata pointi.</td></tr>
+		    {% endfor %}
+		  </tbody>
+		</table>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<div class="col-1"></div>
+      </div>
+    </div>
+  </body>
+</html>
