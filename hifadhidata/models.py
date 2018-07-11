@@ -77,8 +77,11 @@ class Problem(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=False, null=False)
     level = models.IntegerField(blank=False, null=False)
-    initial_code = models.TextField(blank=False, null=False)
-    goal_code = models.TextField(blank=False, null=False)
+    elezo = models.TextField(blank=False, null=False)
+    # TODO: For stmts like INSERT/UPDATE/DELETE, will need answer phrased
+    # in terms of Python/etc.
+    answer_sql = models.TextField(blank=False, null=False)
+
     def __str__(self):
         return "%s (Level %d)" % (self.name, self.level)
 
