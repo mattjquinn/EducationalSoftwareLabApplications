@@ -106,10 +106,11 @@ def changamoto(request, student_id, problem_id):
       messages.error(request, "You are not permitted to play at this time.")
       return redirect('hd.index')
 
-  # TODO: Get table list from changamato record
+  progress = Progress.objects.get(student_id=student_id, problem_id=problem_id)
+
   cursor = connections['hifadhidata'].cursor()
   html = ""
-  for table in ['sayari']:
+  for table in progress.problem_id.required_tables.split(','):
      cursor.execute('SELECT * FROM ' + table)
      qshtml, qslist = process_qs(cursor)
      html += '<h1>' + table + '<span class="tbl-info">(' + str(len(cursor.description)) + ' columns, ' + str(cursor.rowcount) + ' rows)</span></h1>'
@@ -117,8 +118,7 @@ def changamoto(request, student_id, problem_id):
 
   context = {
     'student' : student,
-    'progress' : Progress.objects.get(
-        student_id=student_id, problem_id=problem_id),
+    'progress' : progress,
     'navcolor' : "%06x" % random.randint(0, 0xFFFFFF),
     'tables_html' : html,
   }

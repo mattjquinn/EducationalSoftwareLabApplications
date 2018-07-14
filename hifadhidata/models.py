@@ -81,6 +81,8 @@ class Problem(models.Model):
     # TODO: For stmts like INSERT/UPDATE/DELETE, will need answer phrased
     # in terms of Python/etc.
     answer_sql = models.TextField(blank=False, null=False)
+    required_tables = models.TextField(blank=False, null=False)
+    table_font_size = models.TextField(blank=False, null=False)
 
     def __str__(self):
         return "%s (Level %d)" % (self.name, self.level)
