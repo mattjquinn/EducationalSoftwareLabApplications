@@ -7,5 +7,5 @@ admin.site.register(AccessWhitelist)
 
 # Order problems in Django admin interface by ascending level.
 class ProblemAdmin(admin.ModelAdmin):
-    ordering = ['level']
+    ordering = ['-level']
 admin.site.register(Problem, ProblemAdmin)
