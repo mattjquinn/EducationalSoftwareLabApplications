@@ -30,7 +30,7 @@
 	top: 0;
 	right: 0;
 	background-color: white;
-	z-index: 100;
+	z-index: 200;
 	border: none;
 	box-shadow: -5px 0px 11px -4px rgba(0,0,0,0.68);
 	padding: 30px;
@@ -211,7 +211,8 @@
 	   $('#querytable').html(qshtml);
 	   $('#queryresult').scrollTop(0);
 	   if(passfail == 'PASS') {
-		$('#queryresult, #tables').width('95%');
+		$('#tables').hide();
+		$('#queryresult').width('95%').height('100%');
 		$('#querystatus').html('<div class="qs-success">HONGERA! Umetatua "{{ progress.problem_id.name }}". <a href="/hifadhidata/hongera/{{student.id}}/{{progress.problem_id.id}}">Piga hapa</a> kuendelea.</div>');
 	   } else {
 		$('#querystatus').html('<div class="qs-error">Incorrect. Try again.</div>');
