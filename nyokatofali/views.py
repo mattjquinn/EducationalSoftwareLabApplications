@@ -69,7 +69,6 @@ def mwanafunzi(request, student_id):
          WHERE id NOT IN ( \
            SELECT problem_id_id FROM nyokatofali_progress \
            WHERE student_id_id = %s) \
-         AND enabled = True \
          ORDER BY random()) \
        AS a ORDER BY level;' % student_id)
     if len(list(open_problems)) > 0:
