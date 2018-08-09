@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{% static 'pyxeldesigner/css/bootstrap.min.css' %}"/>
     <style>
       body {
-	background: url('/static/pyxeldesigner/images/netbg.jpg') no-repeat center center fixed;
+	background: url('/static/pyxeldesigner/images/bg.gif') no-repeat center center fixed;
 	background-size: cover;
 	padding-bottom: 80px;
       }
@@ -53,7 +53,7 @@
         <div class="col-1"></div>
 	<div class="col-10">
           <div id="overview">
-		  <a id="return-link" href="{% url 'jm.index' %}"><button class="btn btn-primary">RUDI</button></a>
+		  <a id="return-link" href="{% url 'pd.index' %}"><button class="btn btn-primary">RUDI</button></a>
 
      	{% if messages %}
      	<ul class="messages">
@@ -63,8 +63,8 @@
      	</ul>
      	{% endif %}
 
-	    <h1>{{ student.name }}</h1>
-	    <h2>Una pointi {{ student.total_pass_percent }} jumla.</h2>
+	    <h1>{{ group.name }}</h1>
+	    <br/><br/>
 	<table class="table table-striped table-inverse">
 	  <thead>
 	    <tr>
@@ -84,7 +84,7 @@
 	      <td>{% if p.passed %} 100 {% else %} 0 {% endif %}</td>
 	      <td>
 		  {% if not p.passed %}
-		      <a href="{% url 'jm.changamoto' student.id p.problem_id.id %}">
+		      <a href="{% url 'pd.changamoto' group.id p.problem_id.id %}">
 			<button class="btn btn-primary">FUNGUA</button>
 		  {% endif %}
 		</a>

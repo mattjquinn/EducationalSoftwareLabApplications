@@ -19,54 +19,54 @@ def index(request):
   }
   return render(request, 'pyxeldesigner/index.html', context)
 
-#def login(request):
-#  if request.method == 'POST':
-#    student_id = request.POST.get('student_id', '')
-#    try:
-#        student = Student.objects.get(id=student_id)
-#        try:
-#            AccessWhitelist.objects.get(form=student.form, stream=student.stream)
-#        except ObjectDoesNotExist:
-#            messages.error(request, "You are not permitted to play at this time.")
-#            return redirect('jm.index')
-#    except ObjectDoesNotExist:
-#        messages.error(request, 'Tafutia jina lako kwanza.')
-#        return redirect('jm.index')
-#    return redirect(reverse('jm.mwanafunzi', args=[student_id]))
-#
-#def mwanafunzi(request, student_id):
-#  student = Student.objects.get(id=student_id)
-#  try:
-#      AccessWhitelist.objects.get(form=student.form, stream=student.stream)
-#  except ObjectDoesNotExist:
-#      messages.error(request, "You are not permitted to play at this time.")
-#      return redirect('jm.index')
-#  if Progress.objects.filter(student_id=student_id,
-#          passed=False).count() == 0:
-#    # Innermost SELECT: Gets all problem IDs that the student has
-#    # already passed.
-#    # Next SELECT: Selects only those problems the student HASNT done
-#    # and randomly shuffles them.
-#    # Outer SELECT: Orders the shuffled problems by level, easiest first.
-#    open_problems = Problem.objects.raw('SELECT * FROM (\
-#            SELECT * FROM pyxeldesigner_problem WHERE \
-#            id NOT IN (SELECT problem_id_id FROM pyxeldesigner_progress WHERE \
-#            student_id_id = %s AND passed = True) \
-#            ORDER BY random()) AS a ORDER BY level;' % student_id)
-#    if len(list(open_problems)) > 0:
-#      new_problem = Progress.objects.create(
-#              student_id=student,
-#              problem_id=open_problems[0])
-#      new_problem.save()
-#    else:
-#      messages.error(request, 'Hakuna changamoto nyingine.')
-#  context = {
-#    'student' : student,
-#    'progress' : Progress.objects.filter(
-#        student_id=student_id).order_by('started_dtstamp')
-#  }
-#  return render(request, 'pyxeldesigner/mwanafunzi.html', context)
-#
+def login(request):
+  if request.method == 'POST':
+    group_id = request.POST.get('group_id', '')
+    try:
+        group = Group.objects.get(id=group_id)
+        try:
+            AccessWhitelist.objects.get(form=group.form, stream=group.stream)
+        except ObjectDoesNotExist:
+            messages.error(request, "You are not permitted to play at this time.")
+            return redirect('pd.index')
+    except ObjectDoesNotExist:
+        messages.error(request, 'Tafutia jina la kipindi chako kwanza.')
+        return redirect('pd.index')
+    return redirect(reverse('pd.kipindi', args=[group_id]))
+
+def kipindi(request, group_id):
+  group = Group.objects.get(id=group_id)
+  try:
+      AccessWhitelist.objects.get(form=group.form, stream=group.stream)
+  except ObjectDoesNotExist:
+      messages.error(request, "You are not permitted to play at this time.")
+      return redirect('pd.index')
+  if Progress.objects.filter(group_id=group_id,
+          passed=False).count() == 0:
+    # Innermost SELECT: Gets all problem IDs that the student has
+    # already passed.
+    # Next SELECT: Selects only those problems the student HASNT done
+    # and randomly shuffles them.
+    # Outer SELECT: Orders the shuffled problems by level, easiest first.
+    open_problems = Problem.objects.raw('SELECT * FROM (\
+            SELECT * FROM pyxeldesigner_problem WHERE \
+            id NOT IN (SELECT problem_id_id FROM pyxeldesigner_progress WHERE \
+            group_id_id = %s AND passed = True) \
+            ORDER BY random()) AS a ORDER BY level;' % group_id)
+    if len(list(open_problems)) > 0:
+      new_problem = Progress.objects.create(
+              group_id=group,
+              problem_id=open_problems[0])
+      new_problem.save()
+    else:
+      messages.error(request, 'Hakuna changamoto nyingine.')
+  context = {
+    'group' : group,
+    'progress' : Progress.objects.filter(
+        group_id=group_id).order_by('started_dtstamp')
+  }
+  return render(request, 'pyxeldesigner/kipindi.html', context)
+
 #@never_cache
 #def changamoto(request, student_id, problem_id):
 #  student = Student.objects.get(id=student_id)

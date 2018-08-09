@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='pd.index'),
-#    url(r'^login/$', views.login, name='pd.login'),
-#    url(r'^mwanafunzi/([0-9]+)/$', views.mwanafunzi, name='pd.mwanafunzi'),
+    url(r'^login/$', views.login, name='pd.login'),
+    url(r'^kipindi/([0-9]+)/$', views.kipindi, name='pd.kipindi'),
 #    url(r'^changamoto/([0-9]+)/([0-9]+)$', views.changamoto, name='pd.changamoto'),
 #    url(r'^hongera/([0-9]+)/([0-9]+)$', views.hongera, name='pd.hongera'),
 #    url(r'^reset/([0-9]+)/([0-9]+)$', views.reset, name='pd.reset'),
