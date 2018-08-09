@@ -92,15 +92,16 @@ def changamoto(request, group_id, problem_id):
 #    messages.success(request, 'HONGERA. Umeshinda kutatua \
 #            changamoto ya %s.' % prob.name);
 #    return redirect(reverse('pd.mwanafunzi', args=[student_id]))
-#
-## This view resets a student's code if not already passed.
-#def reset(request, student_id, problem_id):
-#  prog = Progress.objects.get(
-#        student_id=student_id, problem_id=problem_id)
-#  if not prog.passed:
-#      prog.latest_submission = ''
-#      prog.save()
-#  return redirect(reverse('pd.changamoto', args=[student_id, problem_id]))
+
+# This view resets a group's code if not already passed.
+def reset(request, group_id, problem_id):
+  group = Group.objects.get(id=group_id)
+  prog = Progress.objects.get(
+        group_id=group_id, problem_id=problem_id)
+  if not prog.passed:
+      group.current_code = group.checkpointed_code
+      group.save()
+  return redirect(reverse('pd.changamoto', args=[group_id, problem_id]))
 
 @csrf_exempt
 def save_code(request):
