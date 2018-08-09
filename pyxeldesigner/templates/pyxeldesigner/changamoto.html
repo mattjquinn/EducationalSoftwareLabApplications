@@ -75,13 +75,19 @@
      .terminal-output textarea:focus {
        outline: none;
      }
+     #websocket-status {
+	color: #ff3933;
+     }
+     #websocket-status.connected {
+	color: #64ff33;
+     }
    </style> 
   </head>
   <body>
 
     <div id="editor">{{ group.current_code }}</div>
     <nav>
-      <span><a href="{% url 'pd.kipindi' group.id %}">{{ group.name }}</a></span>
+      <span><span id="websocket-status">&#x25CF;</span> <a href="{% url 'pd.kipindi' group.id %}">{{ group.name }}</a></span>
       <div>
         <button id="run-code" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#runCodeModal">RUN</button>
         <button id="save-code" type="button" class="btn btn-secondary">SAVE</button>
@@ -211,7 +217,7 @@
         
           ws.onopen = function(evt) {
             console.log("WebSocket opened successfully.");
-            document.getElementById("websocket-status-bar").classList.add("connected");
+            document.getElementById("websocket-status").classList.add("connected");
           };
         
           ws.onmessage = function(evt) {
@@ -221,7 +227,7 @@
           };
         
           ws.onclose = function() {
-            document.getElementById("websocket-status-bar")
+            document.getElementById("websocket-status")
 		    .classList.remove("connected");
             console.log("WebSocket closed; will reopen after timeout.");
             setTimeout(initWebsocket, 5000);
