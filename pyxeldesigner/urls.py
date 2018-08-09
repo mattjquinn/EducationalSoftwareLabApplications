@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^changamoto/([0-9]+)/([0-9]+)$', views.changamoto, name='pd.changamoto'),
 #    url(r'^hongera/([0-9]+)/([0-9]+)$', views.hongera, name='pd.hongera'),
 #    url(r'^reset/([0-9]+)/([0-9]+)$', views.reset, name='pd.reset'),
-#    url(r'^save_code$', views.save_code, name='pd.save_code'),
+    url(r'^save_code$', views.save_code, name='pd.save_code'),
 #    url(r'^submit_code$', views.submit_code, name='pd.submit_code'),
 ]
 

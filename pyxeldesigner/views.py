@@ -101,24 +101,23 @@ def changamoto(request, group_id, problem_id):
 #      prog.latest_submission = ''
 #      prog.save()
 #  return redirect(reverse('pd.changamoto', args=[student_id, problem_id]))
-#
-#@csrf_exempt
-#def save_code(request):
-#  if request.method == 'POST':
-#    try:
-#      student_id = int(request.POST.get('student_id', 0))
-#      problem_id = int(request.POST.get('problem_id', 0))
-#      latest_code = request.POST.get('latest_code', '')
-#      progress = Progress.objects.get(student_id=student_id,
-#              problem_id=problem_id)
-#      progress.latest_submission = latest_code
-#      progress.save()
-#      return HttpResponse("SUCCESS")
-#    except Exception as e:
-#      return HttpResponseServerError("EXCEPTION: %s" % e)
-#  else:
-#      return HttpResponseServerError("ERROR: MUST POST")
-#
+
+@csrf_exempt
+def save_code(request):
+  if request.method == 'POST':
+    try:
+      group_id = int(request.POST.get('group_id', 0))
+      problem_id = int(request.POST.get('problem_id', 0))
+      latest_code = request.POST.get('latest_code', '')
+      group = Group.objects.get(id=group_id)
+      group.current_code = latest_code
+      group.save()
+      return HttpResponse("SUCCESS")
+    except Exception as e:
+      return HttpResponseServerError("EXCEPTION: %s" % e)
+  else:
+      return HttpResponseServerError("ERROR: MUST POST")
+
 #@csrf_exempt
 #def submit_code(request):
 #  if request.method == 'POST':
