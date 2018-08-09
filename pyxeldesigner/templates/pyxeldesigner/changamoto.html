@@ -18,32 +18,10 @@
       #editor {
 	position: absolute;
 	top: 0;
-	right: 50%;
-	bottom: 55px;
+	right: 0;
+	bottom: 50px;
 	left: 0;
 	z-index: 0;
-      }
-      iframe#rendering {
-	position: absolute;
-	width: 50%;
-	height: 100%;
-	top: 0;
-	right: 0;
-	background-color: white;
-	z-index: 100;
-	border: none;
-	box-shadow: -5px 0px 11px -4px rgba(0,0,0,0.68);
-      }
-      iframe#goal {
-	position: absolute;
-	width: 50%;
-	height: 94%;
-	top: 0;
-	left: 0;
-	background-color: white;
-	z-index: 40;
-	border: none;
-	display: none;
       }
       a:hover {
         text-decoration: none;
@@ -52,13 +30,12 @@
         position: absolute;
 	bottom: 0;
 	left: 0;
-	width: 50%;
+	width: 100%;
 	height: 50px;
-	background-color: #b1ff47;
+	background-color: #{{ navcolor }};
 	z-index: 50;
 	box-shadow: 2px -5px 11px -4px rgba(0,0,0,0.68);
 	padding: 5px;
-	background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
       }
       nav > span {
         float: left;
@@ -79,15 +56,15 @@
   </head>
   <body>
 
-    <div id="editor">{% if not progress.latest_submission %}{{ progress.problem_id.initial_code }}{% else %}{{ progress.latest_submission.strip }}{% endif %}</div>
-    <iframe id="rendering"></iframe>
-    <iframe id="goal"></iframe>
-
+    <div id="editor">{{ group.current_code }}</div>
     <nav>
       <span><a href="{% url 'pd.kipindi' group.id %}">{{ group.name }}</a></span>
       <div>
-        <button id="goal-toggle" type="button" class="btn btn-secondary">SHOW GOAL</button>
+        <button id="goal-toggle" type="button" class="btn btn-secondary">RUN</button>
         <button id="save-code" type="button" class="btn btn-secondary">SAVE</button>
+        <button id="goal-toggle" type="button" class="btn btn-secondary">GOAL</button>
+        <button id="goal-toggle" type="button" class="btn btn-secondary">ELEZO</button>
+        <button id="goal-toggle" type="button" class="btn btn-secondary">DOCUMENTATION</button>
         <button id="submit-code" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#submitModal">SUBMIT</button>
       </div>
     </nav>
@@ -177,24 +154,10 @@
     <script src="{% static 'pyxeldesigner/ace_1.3.1_src-min-noconflict/ace.js' %}" type="text/javascript" charset="utf-8"></script>
     <script>
       var editor = ace.edit("editor");
-      editor.setTheme("Chrome");
-      editor.session.setMode('ace/mode/html');
+      editor.setTheme("ace/theme/dracula");
+      editor.session.setMode('ace/mode/python');
       editor.getSession().setUseWrapMode(true);
-      editor.setFontSize(16);
-      // Prevent students from directly pasting code into editor.
-      editor.onCopy = editor.onCut = editor.onPaste = editor.getCopyText = function() { return "" }
-      // On text change, update live rendering.
-      editor.getSession().on('change', function() {
-        updateHTMLRendering();
-      });
-
-      function updateHTMLRendering() {
-	var html = editor.getSession().getValue();
-	var doc = document.getElementById('rendering').contentWindow.document;
-	doc.open();
-	doc.write(html);
-	doc.close();
-      };
+      editor.setFontSize(20);
 
       function saveCodeToServer(successFn, errorFn) {
 	var s_id = $('#student_id').text();
@@ -207,19 +170,6 @@
 	}).done(successFn)
 	  .fail(errorFn)
       };
-
-      $(document).ready(function() {
-
-	// Update the rendering with the intially loaded code.
-      	updateHTMLRendering();
-
-	// Load the goal rendering into the hidden iframe.
-	var goal = $('#goal-html-code').text();
-	var doc = document.getElementById('goal').contentWindow.document;
-	doc.open();
-	doc.write(unescape(goal));
-	doc.close();
-      });
 
       $('button#goal-toggle').click(function() {
         $('iframe#goal').fadeToggle();
