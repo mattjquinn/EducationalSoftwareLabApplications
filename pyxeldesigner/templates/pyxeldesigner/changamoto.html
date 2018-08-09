@@ -322,17 +322,17 @@
       var submitCodeToServer = function() {
 	var pwd = $('#instructor-pwd').val();
 	var pwd_hash = sha256(pwd);
-	var s_id = $('#student_id').text();
+	var g_id = $('#group_id').text();
 	var p_id = $('#problem_id').text();
-	var latest_code = editor.getValue();
+	var code = editor.getValue();
 	$.post('/pyxeldesigner/submit_code', {
 	  instructor_pwd_hash: pwd_hash,
-	  student_id: s_id,
+	  group_id: g_id,
 	  problem_id: p_id,
-	  submitted_code: latest_code
+	  submitted_code: code
 	}).done(function(data){
 	   console.log('Code submission succeeded with msg: ' + data);
-	   window.location = "/pyxeldesigner/hongera/" + s_id + "/" + p_id;	   
+	   window.location = "/pyxeldesigner/hongera/" + g_id + "/" + p_id;	   
 	}).fail(function(xhr, status, err) {
 	   console.log('Code submission failed with msg: ' + xhr.responseText);
 

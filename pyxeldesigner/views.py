@@ -13,9 +13,11 @@ def index(request):
   context = {
     'all' : Group.objects.order_by('name'),
     '3a' : Group.objects.filter(form=3, stream='A')\
-            .order_by('-total_pass_percent', 'motivation_index'),
+            .order_by('-total_first_solves_in_stream',
+                '-total_pass_percent', 'motivation_index'),
     '3b' : Group.objects.filter(form=3, stream='B')\
-            .order_by('-total_pass_percent', 'motivation_index'),
+            .order_by('-total_first_solves_in_stream',
+                '-total_pass_percent', 'motivation_index'),
   }
   return render(request, 'pyxeldesigner/index.html', context)
 
@@ -43,9 +45,9 @@ def kipindi(request, group_id):
       return redirect('pd.index')
   if Progress.objects.filter(group_id=group_id,
           passed=False).count() == 0:
-    # Innermost SELECT: Gets all problem IDs that the student has
+    # Innermost SELECT: Gets all problem IDs that the group has
     # already passed.
-    # Next SELECT: Selects only those problems the student HASNT done
+    # Next SELECT: Selects only those problems the group HASNT done
     # and randomly shuffles them.
     # Outer SELECT: Orders the shuffled problems by level, easiest first.
     open_problems = Problem.objects.raw('SELECT * FROM (\
@@ -86,12 +88,12 @@ def changamoto(request, group_id, problem_id):
       return redirect(reverse('pd.kipindi', args=[group_id]))
   return render(request, 'pyxeldesigner/changamoto.html', context)
 
-#@never_cache
-#def hongera(request, student_id, problem_id):
-#    prob = Problem.objects.get(id=problem_id)
-#    messages.success(request, 'HONGERA. Umeshinda kutatua \
-#            changamoto ya %s.' % prob.name);
-#    return redirect(reverse('pd.mwanafunzi', args=[student_id]))
+@never_cache
+def hongera(request, group_id, problem_id):
+    prob = Problem.objects.get(id=problem_id)
+    messages.success(request, 'HONGERA. Umeshinda kutatua \
+            changamoto ya %s.' % prob.name);
+    return redirect(reverse('pd.kipindi', args=[group_id]))
 
 # This view resets a group's code if not already passed.
 def reset(request, group_id, problem_id):
@@ -119,27 +121,31 @@ def save_code(request):
   else:
       return HttpResponseServerError("ERROR: MUST POST")
 
-#@csrf_exempt
-#def submit_code(request):
-#  if request.method == 'POST':
-#    try:
-#      instructor_pwd_hash = request.POST.get('instructor_pwd_hash', '')
-#      if instructor_pwd_hash != '6ae51c9997858052f953b634d0636679661d52140a6ece5cbe6321f8efcf48b6':
-#          return HttpResponseServerError('Incorrect password.');
-#      student_id = int(request.POST.get('student_id', 0))
-#      problem_id = int(request.POST.get('problem_id', 0))
-#      progress = Progress.objects.get(student_id=student_id,
-#              problem_id=problem_id)
-#      if progress.passed == True:
-#        return HttpResponse("SUCCESS: Ignoring submission, already passed.")
-#      submitted_code = request.POST.get('submitted_code', '')
-#      progress.latest_submission = submitted_code
-#      progress.passed = True
-#      progress.passed_dtstamp = datetime.now()
-#      progress.save()
-#      Student.objects.get(id=student_id).update_rank()
-#      return HttpResponse("SUCCESS: Submission marked as passing.")
-#    except Exception as e:
-#      return HttpResponseServerError("EXCEPTION: %s" % e)
-#  else:
-#      return HttpResponseServerError("ERROR: MUST POST")
+@csrf_exempt
+def submit_code(request):
+  if request.method == 'POST':
+    try:
+      instructor_pwd_hash = request.POST.get('instructor_pwd_hash', '')
+      if instructor_pwd_hash != '6ae51c9997858052f953b634d0636679661d52140a6ece5cbe6321f8efcf48b6':
+          return HttpResponseServerError('Incorrect password.');
+      group_id = int(request.POST.get('group_id', 0))
+      problem_id = int(request.POST.get('problem_id', 0))
+      progress = Progress.objects.get(group_id=group_id,
+              problem_id=problem_id)
+      if progress.passed == True:
+        return HttpResponse("SUCCESS: Ignoring submission, already passed.")
+      submitted_code = request.POST.get('submitted_code', '')
+      progress.final_submission = submitted_code
+      progress.passed = True
+      progress.passed_dtstamp = datetime.now()
+      progress.save()
+
+      group = Group.objects.get(id=group_id)
+      group.current_code = submitted_code
+      group.checkpointed_code = submitted_code
+      group.update_rank()
+      return HttpResponse("SUCCESS: Submission marked as passing.")
+    except Exception as e:
+      return HttpResponseServerError("EXCEPTION: %s" % e)
+  else:
+      return HttpResponseServerError("ERROR: MUST POST")
