@@ -16,12 +16,27 @@ class Group(models.Model):
     checkpointed_code = models.TextField()
     bonus_pass_percent = models.IntegerField(default=0)
     total_pass_percent = models.IntegerField(default=0)
+    total_first_solves_in_stream = models.IntegerField(default=0)
+    bonus_first_solves_in_stream = models.IntegerField(default=0)
     motivation_index = models.IntegerField(default=0)
 
     def update_rank(self):
       all_progress = Progress.objects.filter(group_id=self.id)
       total_pass_percent = all_progress.filter(passed=True).count() * 100
       with connection.cursor() as cursor:
+        cursor.execute("\
+              SELECT COUNT(*) AS total FROM (\
+                SELECT DISTINCT ON (p.problem_id_id)\
+                  g.id, g.name, p.problem_id_id, p.passed_dtstamp\
+                FROM pyxeldesigner_group AS g, pyxeldesigner_progress AS p\
+                WHERE g.id = p.group_id_id\
+                  AND p.passed = TRUE \
+                  AND g.form = %d\
+                  AND g.stream = '%s'\
+                ORDER BY p.problem_id_id, p.passed_dtstamp) AS subquery\
+              WHERE id = %d;" % (self.form, self.stream, self.id))
+        row = cursor.fetchone()
+        total_first_solves = row[0]
         cursor.execute("\
                 SELECT SUM(rank) FROM (\
                 SELECT\
@@ -46,6 +61,8 @@ class Group(models.Model):
       # IMPORTANT NOTE: the totals below include bonus points.
       self.total_pass_percent = total_pass_percent \
               + self.bonus_pass_percent
+      self.total_first_solves_in_stream = total_first_solves \
+              + self.bonus_first_solves_in_stream
       self.save()
 
     def __str__(self):
@@ -63,7 +80,7 @@ class Problem(models.Model):
 class Progress(models.Model):
     group_id = models.ForeignKey('Group', on_delete=models.CASCADE)
     problem_id = models.ForeignKey('Problem', on_delete=models.CASCADE)
-    latest_submission = models.TextField(blank=True)
+    final_submission = models.TextField(blank=True)
     passed = models.BooleanField(default=False)
     started_dtstamp = models.DateTimeField(auto_now_add=True)
     passed_dtstamp = models.DateTimeField(blank=True, null=True)
