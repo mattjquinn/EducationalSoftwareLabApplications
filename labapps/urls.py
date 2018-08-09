@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^nyokatofali/', include('nyokatofali.urls')),
     url(r'^jengamtandao/', include('jengamtandao.urls')),
     url(r'^hifadhidata/', include('hifadhidata.urls')),
+    url(r'^pyxeldesigner/', include('pyxeldesigner.urls')),
 ]
