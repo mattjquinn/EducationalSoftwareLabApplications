@@ -47,7 +47,7 @@ class Group(models.Model):
       self.save()
 
     def __str__(self):
-        return "%s (%d%s, %s)" % (self.name, self.form, self.stream, self.gender)
+        return "%s (%d%s)" % (self.name, self.form, self.stream)
 
 class Problem(models.Model):
     id = models.AutoField(primary_key=True)
