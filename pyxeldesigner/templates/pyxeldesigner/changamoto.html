@@ -100,6 +100,7 @@
       </div>
     </nav>
 
+    <div id="run-code-preamble" style="display: none">PD_STATIC_IMAGES_PATH = "{{ request.scheme }}://{{ request.get_host }}/static/pyxeldesigner/images/"</div>
     <div id="group_id" style="display: none">{{ group.id }}</div>
     <div id="problem_id" style="display: none">{{ progress.problem_id.id }}</div>
     <div id="goal-code" style="display: none">{{ progress.problem_id.solution }}</div>
@@ -256,8 +257,9 @@
         
         function sendCode(code) {
           term.value = "";
+	  preamble = $('#run-code-preamble').text();
 	  console.log('Sending code to backend via websocket...');
-          ws.send("PD_CODE:" + code);
+          ws.send("PD_CODE:" + preamble + "\n\n" + code);
         };
 
         $('button#run-code').click(function(){
