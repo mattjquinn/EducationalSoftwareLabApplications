@@ -12,6 +12,8 @@ class Group(models.Model):
     name = models.CharField(max_length=50, blank=False, null=False)
     form = models.IntegerField(blank=False, null=False)
     stream = models.CharField(max_length=1, choices=STREAM_CHOICES)
+    current_code = models.TextField()
+    checkpointed_code = models.TextField()
     bonus_pass_percent = models.IntegerField(default=0)
     total_pass_percent = models.IntegerField(default=0)
     motivation_index = models.IntegerField(default=0)
@@ -53,6 +55,7 @@ class Problem(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=False, null=False)
     level = models.IntegerField(blank=False, null=False)
+    elezo = models.TextField(blank=False, null=False)
     solution = models.TextField(blank=False, null=False)
     def __str__(self):
         return "%s (Level %d)" % (self.name, self.level)

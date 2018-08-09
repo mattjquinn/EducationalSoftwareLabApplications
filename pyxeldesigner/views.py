@@ -67,30 +67,31 @@ def kipindi(request, group_id):
   }
   return render(request, 'pyxeldesigner/kipindi.html', context)
 
-#@never_cache
-#def changamoto(request, student_id, problem_id):
-#  student = Student.objects.get(id=student_id)
-#  try:
-#      AccessWhitelist.objects.get(form=student.form, stream=student.stream)
-#  except ObjectDoesNotExist:
-#      messages.error(request, "You are not permitted to play at this time.")
-#      return redirect('jm.index')
-#  context = {
-#    'student' : student,
-#    'progress' : Progress.objects.get(
-#        student_id=student_id, problem_id=problem_id)
-#  }
-#  if context['progress'].passed == True:
-#      messages.error(request, 'You have already solved this problem.')
-#      return redirect(reverse('jm.mwanafunzi', args=[student_id]))
-#  return render(request, 'pyxeldesigner/changamoto.html', context)
-#
+@never_cache
+def changamoto(request, group_id, problem_id):
+  group = Group.objects.get(id=group_id)
+  try:
+      AccessWhitelist.objects.get(form=group.form, stream=group.stream)
+  except ObjectDoesNotExist:
+      messages.error(request, "You are not permitted to play at this time.")
+      return redirect('pd.index')
+  context = {
+    'group' : group,
+    'progress' : Progress.objects.get(
+        group_id=group_id, problem_id=problem_id),
+    'navcolor' : '%06x' % random.randint(0, 0xFFFFFF),
+  }
+  if context['progress'].passed == True:
+      messages.error(request, 'You have already solved this problem.')
+      return redirect(reverse('pd.kipindi', args=[group_id]))
+  return render(request, 'pyxeldesigner/changamoto.html', context)
+
 #@never_cache
 #def hongera(request, student_id, problem_id):
 #    prob = Problem.objects.get(id=problem_id)
 #    messages.success(request, 'HONGERA. Umeshinda kutatua \
 #            changamoto ya %s.' % prob.name);
-#    return redirect(reverse('jm.mwanafunzi', args=[student_id]))
+#    return redirect(reverse('pd.mwanafunzi', args=[student_id]))
 #
 ## This view resets a student's code if not already passed.
 #def reset(request, student_id, problem_id):
@@ -99,7 +100,7 @@ def kipindi(request, group_id):
 #  if not prog.passed:
 #      prog.latest_submission = ''
 #      prog.save()
-#  return redirect(reverse('jm.changamoto', args=[student_id, problem_id]))
+#  return redirect(reverse('pd.changamoto', args=[student_id, problem_id]))
 #
 #@csrf_exempt
 #def save_code(request):
