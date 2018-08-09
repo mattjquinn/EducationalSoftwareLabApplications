@@ -12,11 +12,9 @@ from django.views.decorators.cache import never_cache
 def index(request):
   context = {
     'all' : Group.objects.order_by('name'),
-    '3a' : Group.objects.filter(form=3, stream='A',\
-            total_pass_percent__gt=0)\
+    '3a' : Group.objects.filter(form=3, stream='A')\
             .order_by('-total_pass_percent', 'motivation_index'),
-    '3b' : Group.objects.filter(form=3, stream='B',\
-            total_pass_percent__gt=0)\
+    '3b' : Group.objects.filter(form=3, stream='B')\
             .order_by('-total_pass_percent', 'motivation_index'),
   }
   return render(request, 'pyxeldesigner/index.html', context)
