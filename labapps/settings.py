@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'nyokatofali',
     'jengamtandao',
     'hifadhidata',
+    'pyxeldesigner',
 ]
 
 MIDDLEWARE = [
