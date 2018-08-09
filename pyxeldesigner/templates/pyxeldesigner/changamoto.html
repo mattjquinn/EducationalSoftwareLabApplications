@@ -52,6 +52,29 @@
       nav > div > * {
         margin: 0 5px;
       }
+     .terminal {
+       z-index: 10;
+       border: solid 1px #000;
+       line-height: 20px;
+       height: 500px;
+     }
+     .terminal-output {
+       height: 100%;
+     }
+     .terminal-output textarea {
+       font-family: Courier New, Courier, monospace;
+       font-size: 16px;
+       background: rgba(0,0,0,0.8);
+       color: #fff;
+       border: none;
+       padding: 0;
+       margin: 0;
+       width: 100%;
+       height: 100%;
+     }
+     .terminal-output textarea:focus {
+       outline: none;
+     }
    </style> 
   </head>
   <body>
@@ -60,7 +83,7 @@
     <nav>
       <span><a href="{% url 'pd.kipindi' group.id %}">{{ group.name }}</a></span>
       <div>
-        <button id="goal-toggle" type="button" class="btn btn-secondary">RUN</button>
+        <button id="run-code" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#runCodeModal">RUN</button>
         <button id="save-code" type="button" class="btn btn-secondary">SAVE</button>
         <button id="goal-toggle" type="button" class="btn btn-secondary">GOAL</button>
         <button id="goal-toggle" type="button" class="btn btn-secondary">ELEZO</button>
@@ -69,9 +92,34 @@
       </div>
     </nav>
 
-    <div id="student_id" style="display: none">{{ student.id }}</div>
+    <div id="group_id" style="display: none">{{ group.id }}</div>
     <div id="problem_id" style="display: none">{{ progress.problem_id.id }}</div>
     <div id="goal-html-code" style="display: none">{{ progress.problem_id.goal_code }}</div>
+
+    <div id="runCodeModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Run Application</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="terminal" class="terminal">
+              <div class="terminal-output">
+                <textarea id="term" disabled="disabled">
+			This is some text.
+		</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="codeSubmitErrorModal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -92,17 +140,17 @@
       </div>
     </div>
 
-    <div id="htmlErrorsModal" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
+    <div id="elezoModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Your HTML Contains Errors</h5>
+            <h5 class="modal-title">Elezo la Changamoto</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-	    Your code has one or more errors marked by red Xs; you must fix these before you can submit.
+		  TODO: Place elezo here.
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -153,20 +201,69 @@
 
     <script src="{% static 'pyxeldesigner/ace_1.3.1_src-min-noconflict/ace.js' %}" type="text/javascript" charset="utf-8"></script>
     <script>
+        window.addEventListener("load", initWebsocket);
+	var term = document.getElementById("term");
+        var ws = null;
+        
+        function initWebsocket() {
+          console.log("Opening WebSocket to PyxelDesigner back-end...");
+          ws = new WebSocket("ws://" + getHost());
+        
+          ws.onopen = function(evt) {
+            console.log("WebSocket opened successfully.");
+            document.getElementById("websocket-status-bar").classList.add("connected");
+          };
+        
+          ws.onmessage = function(evt) {
+            console.log("Received message on WebSocket: " + evt.data);
+            term.value += evt.data;
+            term.scrollTop = term.scrollHeight;
+          };
+        
+          ws.onclose = function() {
+            document.getElementById("websocket-status-bar")
+		    .classList.remove("connected");
+            console.log("WebSocket closed; will reopen after timeout.");
+            setTimeout(initWebsocket, 5000);
+          };
+        };
+        
+        function clearTerminal() {
+          term.value = "";
+        };
+        
+        function sendCode() {
+          toggleTerminal(true);
+          clearTerminal();
+	  var code = "";
+          var verify_code = document.getElementById("verify-code").innerText; 
+          var code = student_code + "\n\n" + verify_code;
+          ws.send("NT_CODE:" + code);
+        };
+        
+        function getHost() {
+          // MQUINN : Always access local NT backend, none
+          // on server.
+          return "127.0.0.1:8081";
+        };
+
       var editor = ace.edit("editor");
       editor.setTheme("ace/theme/dracula");
       editor.session.setMode('ace/mode/python');
       editor.getSession().setUseWrapMode(true);
       editor.setFontSize(20);
 
+      // Show problem description on page load.
+      $('#elezoModal').modal('show');
+
       function saveCodeToServer(successFn, errorFn) {
-	var s_id = $('#student_id').text();
+	var g_id = $('#group_id').text();
 	var p_id = $('#problem_id').text();
-	var latest_code = editor.getValue();
+	var code = editor.getValue();
 	$.post('/pyxeldesigner/save_code', {
-	  student_id: s_id,
+	  group_id: g_id,
 	  problem_id: p_id,
-	  latest_code: latest_code
+	  latest_code: code
 	}).done(successFn)
 	  .fail(errorFn)
       };
