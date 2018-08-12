@@ -77,11 +77,15 @@ def changamoto(request, group_id, problem_id):
   except ObjectDoesNotExist:
       messages.error(request, "You are not permitted to play at this time.")
       return redirect('pd.index')
+  preamble_code = "PD_STATIC_IMAGES_PATH = '{}://{}/static/pyxeldesigner/images/'"\
+          .format(request.scheme, request.get_host())\
+          + "\n" + Problem.objects.get(id=problem_id).preamble
   context = {
     'group' : group,
     'progress' : Progress.objects.get(
         group_id=group_id, problem_id=problem_id),
     'navcolor' : '%06x' % random.randint(0, 0xFFFFFF),
+    'preamble_code' : preamble_code
   }
   if context['progress'].passed == True:
       messages.error(request, 'You have already solved this problem.')
