@@ -156,9 +156,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-		  TODO: Place elezo here.
-          </div>
+	  <div class="modal-body"><div style="font-size: 1.3em">{{ progress.problem_id.elezo | safe }}</div></div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
@@ -178,7 +176,7 @@
           <div class="modal-body">
 <article class="markdown-body entry-content" itemprop="text">
 <h2>Color Palette</h2>
-<img src="{% static 'pyxeldesigner/images/05_color_palette.png' %}"/>
+<center><img src="{% static 'pyxeldesigner/images/05_color_palette.png' %}"/></center>
 <br/><br/>
 <h2>API Reference</h2>
 <h3>System</h3>
