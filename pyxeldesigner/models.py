@@ -73,6 +73,7 @@ class Problem(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     level = models.IntegerField(blank=False, null=False)
     elezo = models.TextField(blank=False, null=False)
+    preamble = models.TextField()
     solution = models.TextField(blank=False, null=False)
     def __str__(self):
         return "%s (Level %d)" % (self.name, self.level)
