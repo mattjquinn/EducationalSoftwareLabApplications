@@ -176,7 +176,214 @@
             </button>
           </div>
           <div class="modal-body">
-		  TODO: Place Pyxel documentation here.
+<article class="markdown-body entry-content" itemprop="text">
+<h2>Color Palette</h2>
+<img src="{% static 'pyxeldesigner/images/05_color_palette.png' %}"/>
+<br/><br/>
+<h2>API Reference</h2>
+<h3>System</h3>
+<ul>
+<li>
+<p><code>width</code>, <code>height</code><br>
+The width and height of the screen</p>
+</li>
+<li>
+<p><code>frame_count</code><br>
+The number of the elapsed frames</p>
+</li>
+<li>
+<p><code>init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])</code><br>
+Initialize the Pyxel application with screen size (<code>width</code>, <code>height</code>). The maximum width and height of the screen is 256<br>
+It is also possible to specify the window title with <code>caption</code>, the display magnification with <code>scale</code>, the palette color with <code>palette</code>, the frame rate with <code>fps</code>, and the margin width and color outside the screen with <code>border_width</code> and <code>border_color</code>. <code>palette</code> is specified as a list of 16 elements of 24 bit color, <code>border_color</code> as 24 bit color</p>
+</li>
+<li>
+<p><code>run(update, draw)</code><br>
+Start the Pyxel application and call <code>update</code> function for frame update and <code>draw</code> function for drawing</p>
+</li>
+<li>
+<p><code>quit()</code><br>
+End the Pyxel application at the end of the current frame</p>
+</li>
+</ul>
+<h3>Input</h3>
+<ul>
+<li>
+<p><code>mouse_x</code>, <code>mouse_y</code><br>
+The current position of the mouse cursor</p>
+</li>
+<li>
+<p><code>btn(key)</code><br>
+Return <code>True</code> if <code>key</code> is pressed, otherwise return <code>False</code> (See the <b>Key Bindings</b> list below for accepted key values.)</p>
+</li>
+<li>
+<p><code>btnp(key, [hold], [period])</code><br>
+Return <code>True</code> if <code>key</code> is pressed at that frame, otherwise return <code>False</code>. When <code>hold</code> and <code>period</code> are specified, <code>True</code> will be returned at the <code>period</code> frame interval when the <code>key</code> is held down for more than <code>hold</code> frames</p>
+</li>
+<li>
+<p><code>btnr(key)</code><br>
+Return <code>True</code> if <code>key</code> is released at that frame, otherwise return <code>False</code></p>
+</li>
+</ul>
+<h3>Graphics</h3>
+<ul>
+<li>
+<p><code>image(img, [system])</code><br>
+Operate the image bank <code>img</code>(0-2) (see the Image class). If <code>system</code> is <code>True</code>, the image bank 3 for system can be accessed<br>
+e.g. <code>pyxel.image(0).load(0, 0, 'title.png')</code></p>
+</li>
+<li>
+<p><code>clip(x1, y1, x2, y2)</code><br>
+Set the drawing area of the screen to (<code>x1</code>, <code>y1</code>)-(<code>x2</code>, <code>y2</code>). Reset the drawing area with <code>clip()</code></p>
+</li>
+<li>
+<p><code>pal(col1, col2)</code><br>
+Replace color <code>col1</code> with <code>col2</code> at drawing. <code>pal()</code> to reset to the initial palette</p>
+</li>
+<li>
+<p><code>cls(col)</code><br>
+Clear screen with color <code>col</code></p>
+</li>
+<li>
+<p><code>pix(x, y, col)</code><br>
+Draw a pixel of color <code>col</code> at (<code>x</code>, <code>y</code>)</p>
+</li>
+<li>
+<p><code>line(x1, y1, x2, y2, col)</code><br>
+Draw a line of color <code>col</code> from (<code>x1</code>, <code>y1</code>) to (<code>x2</code>, <code>y2</code>)</p>
+</li>
+<li>
+<p><code>rect(x1, y1, x2, y2, col)</code><br>
+Draw a rectangle of color <code>col</code> from (<code>x1</code>, <code>y1</code>) to (<code>x2</code>, <code>y2</code>)</p>
+</li>
+<li>
+<p><code>rectb(x1, y1, x2, y2, col)</code><br>
+Draw the outline of a rectangle of color <code>col</code> from (<code>x1</code>, <code>y1</code>) to (<code>x2</code>, <code>y2</code>)</p>
+</li>
+<li>
+<p><code>circ(x, y, r, col)</code><br>
+Draw a circle of radius <code>r</code> and color <code>col</code> at (<code>x</code>, <code>y</code>)</p>
+</li>
+<li>
+<p><code>circb(x, y, r, col)</code><br>
+Draw the outline of a circle of radius <code>r</code> and color <code>col</code> at (<code>x</code>, <code>y</code>)</p>
+</li>
+<li>
+<p><code>blt(x, y, img, sx, sy, w, h, [colkey])</code><br>
+Copy the region of size (<code>w</code>, <code>h</code>) from (<code>sx</code>, <code>sy</code>) of the image bank <code>img</code>(0-2) to (<code>x</code>, <code>y</code>). If negative value is set for <code>w</code> and/or <code>h</code>, it will reverse horizontally and/or vertically. If <code>colkey</code> is specified, treated as transparent color</p>
+</li>
+<li>
+<p><code>text(x, y, s, col)</code><br>
+Draw a string <code>s</code> of color <code>col</code> at (<code>x</code>, <code>y</code>)</p>
+</li>
+</ul>
+<h3>Audio</h3>
+<ul>
+<li>
+<p><code>sound(snd)</code><br>
+Operate the sound bank <code>snd</code>(0-63) (see the Sound class)
+e.g. <code>pyxel.sound(0).speed = 60</code></p>
+</li>
+<li>
+<p><code>play(ch, snd, loop=False)</code><br>
+Play the sound bank <code>snd</code>(0-63) on channel <code>ch</code>(0-3). Play in order when <code>snd</code> is a list</p>
+</li>
+<li>
+<p><code>stop(ch)</code><br>
+Stop playback of channel <code>ch</code>(0-3)</p>
+</li>
+</ul>
+<h3>Image Class</h3>
+<ul>
+<li>
+<p><code>width</code>, <code>height</code><br>
+The width and height of the Image</p>
+</li>
+<li>
+<p><code>data</code><br>
+The data of the Image (NumPy array)</p>
+</li>
+<li>
+<p><code>set(x, y, data)</code><br>
+Set the image as a list of strings at (<code>x</code>, <code>y</code>)<br>
+e.g. <code>pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])</code></p>
+</li>
+<li>
+<p><code>load(x, y, filename, [dirname])</code><br>
+Read the png image from the directory of the execution script or <code>dirname</code> at (<code>x</code>, <code>y</code>)</p>
+</li>
+<li>
+<p><code>copy(x, y, img, sx, sy, width, height)</code><br>
+Copy the region of size (<code>width</code>, <code>height</code>) from (<code>sx</code>, <code>sy</code>) of the image bank <code>img</code>(0-2) to (<code>x</code>, <code>y</code>)</p>
+</li>
+</ul>
+<h3>Sound Class</h3>
+<ul>
+<li>
+<p><code>note</code><br>
+List of note(0-127) (33 = 'A2' = 440Hz)</p>
+</li>
+<li>
+<p><code>tone</code><br>
+List of tone(0:Triangle / 1:Square / 2:Pulse / 3:Noise)</p>
+</li>
+<li>
+<p><code>volume</code><br>
+List of volume(0-7)</p>
+</li>
+<li>
+<p><code>effect</code><br>
+List of effects(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)</p>
+</li>
+<li>
+<p><code>speed</code><br>
+The length of one note(120 = 1 second per tone)</p>
+</li>
+<li>
+<p><code>set(note, tone, volume, effect, speed)</code><br>
+Set a note, tone, volume, and effect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning</p>
+</li>
+<li>
+<p><code>set_note(note)</code><br>
+Set the note with a string consists of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored<br>
+e.g. <code>pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')</code></p>
+</li>
+<li>
+<p><code>set_tone(tone)</code><br>
+Set the tone with a string consists of 'TSPN'. Case-insensitive and whitespace is ignored<br>
+e.g. <code>pyxel.sound(0).set_tone('TTSS PPPN')</code></p>
+</li>
+<li>
+<p><code>set_volume(volume)</code><br>
+Set the volume with a string consists of '01234567'. Case-insensitive and whitespace is ignored<br>
+e.g. <code>pyxel.sound(0).set_volume('7777 7531')</code></p>
+</li>
+<li>
+<p><code>set_effect(effect)</code><br>
+Set the effect with a string consists of 'NSVF'. Case-insensitive and whitespace is ignored<br>
+e.g. <code>pyxel.sound(0).set_effect('NFNF NVVS')</code></p>
+</li>
+</ul>
+<br/>
+<h2>Key Bindings</h2>
+<ul>
+	<li>Letters <code>A</code> through <code>Z</code>: <code>KEY_A</code> through <code>KEY_Z</code></li>
+	<li>Numbers <code>0</code> through <code>9</code>: <code>KEY_0</code> through <code>KEY_9</code></li>
+	<li>Function keys <code>F1</code> through <code>F11</code>: <code>KEY_F1</code> through <code>KEY_F11</code></li>
+	<li>Space: <code>KEY_SPACE</code></li>
+	<li>Enter: <code>KEY_ENTER</code></li>
+	<li>Escape: <code>KEY_ESCAPE</code></li>
+	<li>Tab: <code>KEY_TAB </code></li>
+	<li>Backspace: <code>KEY_BACKSPACE</code></li>
+	<li>Insert: <code>KEY_INSERT</code></li>
+	<li>Delete: <code>KEY_DELETE</code></li>
+	<li>Right: <code>KEY_RIGHT</code></li>
+	<li>Left: <code>KEY_LEFT</code>
+        <li>Down: <code>KEY_DOWN</code>
+	<li>Up: <code>KEY_UP</code></li>
+	<li>Unknown key: <code>KEY_UNKNOWN</code></li>
+</ul>
+</article>
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
