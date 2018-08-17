@@ -36,7 +36,7 @@
 	padding: 30px;
 	overflow-y: scroll;
       }
-      div#tables {
+      div#alltables {
 	position: absolute;
 	width: 60%;
 	height: 60%;
@@ -49,7 +49,7 @@
 	padding: 30px;
 	overflow-y: scroll;
       }
-      #querytable table, #tables table {
+      #querytable table, #alltables table {
 	font-size: {{ progress.problem_id.table_font_size }};
       }
       a:hover {
@@ -131,7 +131,7 @@
         <div id="querystatus"><div class="qs-info">Andika SQL yako upande wa kushoto, halafu piga "Run" kuona matokeo hapa</div></div>
    	<div id="querytable"></div> 
     </div>
-    <div id="tables">
+    <div id="alltables">
      {{ tables_html | safe }} 
     </div>
 
@@ -206,17 +206,26 @@
 	  problem_id: p_id,
 	  code: latest_code
 	}).done(function(data){
-	   passfail = data.substring(0, 4);
-	   qshtml = data.substring(5);
-	   $('#querytable').html(qshtml);
-	   $('#queryresult').scrollTop(0);
-	   if(passfail == 'PASS') {
-		$('#tables').hide();
-		$('#queryresult').width('95%').height('100%');
-		$('#querystatus').html('<div class="qs-success">HONGERA! Umetatua "{{ progress.problem_id.name }}". <a href="/hifadhidata/hongera/{{student.id}}/{{progress.problem_id.id}}">Piga hapa</a> kuendelea.</div>');
-	   } else {
-		$('#querystatus').html('<div class="qs-error">Incorrect. Try again.</div>');
+	   if(data['result']== 'PASS') {
+	        $('#querytable').html(data['queryset_html']);j
+  	        $('#queryresult').scrollTop(0);
 
+		// TODO: Show either all tables or query result based on question type
+		$('#alltables').hide();
+		$('#queryresult').width('95%').height('100%');
+
+		$('#querystatus').html('<div class="qs-success">HONGERA! Umetatua "{{ progress.problem_id.name }}". <a href="/hifadhidata/hongera/{{student.id}}/{{progress.problem_id.id}}">Piga hapa</a> kuendelea.</div>');
+
+	   } else if(data['result'] == 'FAIL') {
+	        $('#querytable').html(data['queryset_html']);
+                $('#queryresult').scrollTop(0);
+		$('#querystatus').html('<div class="qs-error">Incorrect. Try again.</div>');
+		$('#alltables').html(data['alltables_html']);
+
+	   } else {
+	        $('#querytable').html('');
+                $('#querystatus').html('<div class="qs-error">' + data['error_msg'] + '</div>');
+		$('#alltables').html(data['alltables_html']);	
 	   }
 	}).fail(function(xhr, status, err) {
 	   $('#querytable').html('');
