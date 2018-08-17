@@ -226,12 +226,12 @@ def run_code(request):
       cursor = connections['hifadhidata'].cursor()
 
       # Run the student's code; return column names + succeeding records
-      if problem.is_partitioned:
-          # If partitioned tables involved, replace sym table name w/ actual name
-          for tname in problem.required_tables.split(','):
-              symbolic_table = tname.replace('$STUDENTID$', '')
-              actual_table = tname.replace('$STUDENTID$', str(student_id))
-              submitted_code = submitted_code.replace(symbolic_table, actual_table)
+      for tname in problem.required_tables.split(','):
+        # For each partitioned table involved, replace sym table name w/ actual name
+        if '$STUDENTID$' in tname:
+            symbolic_table = tname.replace('$STUDENTID$', '')
+            actual_table = tname.replace('$STUDENTID$', str(student_id))
+            submitted_code = submitted_code.replace(symbolic_table, actual_table)
       cursor.execute(submitted_code)
       qshtml, qslist = process_qs(cursor)
 
@@ -265,7 +265,8 @@ def run_code(request):
         _, answList = process_qs(cursor)
         passed = (stdtList == answList)
       else:
-        cursor.execute(problem.answer_sql)
+        answer_sql = problem.answer_sql.replace('$STUDENTID$', str(student_id))
+        cursor.execute(answer_sql)
         _, qsanswerList= process_qs(cursor)
         passed = (qslist == qsanswerList)
 
