@@ -78,10 +78,11 @@ class Problem(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     level = models.IntegerField(blank=False, null=False)
     elezo = models.TextField(blank=False, null=False)
-    # TODO: For stmts like INSERT/UPDATE/DELETE, will need answer phrased
-    # in terms of Python/etc.
-    answer_sql = models.TextField(blank=False, null=False)
     required_tables = models.TextField(blank=False, null=False)
+    is_partitioned = models.BooleanField(default=False)
+    partitioned_create_ddl = models.TextField(blank=True)
+    partitioned_load_stmts = models.TextField(blank=True)
+    answer_sql = models.TextField(blank=False, null=False)
     table_font_size = models.TextField(blank=False, null=False)
 
     def __str__(self):
@@ -91,6 +92,7 @@ class Progress(models.Model):
     student_id = models.ForeignKey('Student', on_delete=models.CASCADE)
     problem_id = models.ForeignKey('Problem', on_delete=models.CASCADE)
     latest_submission = models.TextField(blank=True)
+    initialized = models.BooleanField(default=False)
     passed = models.BooleanField(default=False)
     started_dtstamp = models.DateTimeField(auto_now_add=True)
     passed_dtstamp = models.DateTimeField(blank=True, null=True)
