@@ -148,7 +148,7 @@
     <div id="problem_id" style="display: none">{{ progress.problem_id.id }}</div>
 
     <div id="elezoModal" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Elezo la Changamoto</h5>
@@ -207,11 +207,15 @@
 	  code: latest_code
 	}).done(function(data){
 	   if(data['result']== 'PASS') {
-	        $('#querytable').html(data['queryset_html']);j
-  	        $('#queryresult').scrollTop(0);
-
-		// TODO: Show either all tables or query result based on question type
 		$('#alltables').hide();
+		if (data['is_partitioned']) {
+		  // If partitioned, show all tables; no query set to display.
+	          $('#querytable').html(data['alltables_html']);
+		} else {
+		  // If not partitioned, show query set as usual.
+		  $('#querytable').html(data['queryset_html']);
+		}
+  	        $('#queryresult').scrollTop(0);
 		$('#queryresult').width('95%').height('100%');
 
 		$('#querystatus').html('<div class="qs-success">HONGERA! Umetatua "{{ progress.problem_id.name }}". <a href="/hifadhidata/hongera/{{student.id}}/{{progress.problem_id.id}}">Piga hapa</a> kuendelea.</div>');

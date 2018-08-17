@@ -107,7 +107,7 @@ def generate_required_tables_html(cursor, student_id, progress):
     cursor.execute('SELECT * FROM ' + actual_table)
     qshtml, qslist = process_qs(cursor)
     html += '<h1>' + symbolic_table + '<span class="tbl-info">(' + str(len(cursor.description)) + ' columns, ' + str(cursor.rowcount) + ' rows)</span></h1>'
-    html += qshtml
+    html += qshtml + "<br/>"
   return html
 
 def initialize_changamoto(dbcursor, student_id, progress):
@@ -123,11 +123,14 @@ def initialize_changamoto(dbcursor, student_id, progress):
      # Now create the partitioned solution tables...
      try:
        dbcursor.execute(problem.partitioned_create_ddl.replace(
-         '$STUDENTID$', student_id + '_soln'))
+         '$STUDENTID$', student_id + '_solution'))
      except Exception as e:
          pass # We don't care if this fails due to already existent table
-     # IMPORTANT: No need to run initial soln table loads;
-     # this will be done at solution checking time.
+     # ...and run initial load statements + apply answer to solution table
+     dbcursor.execute(problem.partitioned_load_stmts.replace(
+         '$STUDENTID$', student_id + '_solution'))
+     dbcursor.execute(problem.answer_sql.replace('$STUDENTID$', str(student_id)))
+
   progress.initialized = True
   progress.save()
        
@@ -173,7 +176,10 @@ def reset(request, student_id, problem_id):
   prog = Progress.objects.get(
         student_id=student_id, problem_id=problem_id)
   if not prog.passed:
+      # Reset code
       prog.latest_submission = ''
+      # Will cause table data to be reset for partitioned problems
+      prog.initialized = False
       prog.save()
   return redirect(reverse('hd.changamoto', args=[student_id, problem_id]))
 
@@ -229,33 +235,48 @@ def run_code(request):
       cursor.execute(submitted_code)
       qshtml, qslist = process_qs(cursor)
 
-      # Prepare the answer SQL for execution.
-      answer_sql = problem.answer_sql
+      # If the problem is partitioned, reset the answer table prior to checking.
       if problem.is_partitioned:
-        # If problem is partitioned, must point at partitioned solution table
-        answer_sql = answer_sql.replace('$STUDENTID$', str(student_id))
-        # Also must run initial load statements against solution table.
+        # First must run initial load statements against solution table.
         cursor.execute(problem.partitioned_load_stmts.replace(
-            '$STUDENTID$', str(student_id) + '_soln'))
+            '$STUDENTID$', str(student_id) + '_solution'))
+        # Then run answer statements against the solution table.
+        cursor.execute(problem.answer_sql.replace('$STUDENTID$', str(student_id)))
 
-      # TODO: Check if answer_SQL contains SELECT.
-      # - YES: Compare qsanswerList to qsList
-      # - NO: Compare SELECT * on soln table to SELECT * on required table;
-      #   throw an error if there are multiple required tables
-      cursor.execute(answer_sql)
-      _, qsanswerList= process_qs(cursor)
+      # Prepare the JSON response.
       jsonresp = {
         'queryset_html' : qshtml,
+        'is_partitioned': problem.is_partitioned,
         'alltables_html': generate_required_tables_html(cursor,
             student_id, progress)
       }
-      if qslist == qsanswerList:
+
+      # Determine if student passed/failed based on whether partitioning is involved.
+      if problem.is_partitioned:
+        # For partitioned tables, use the first table as the table to check
+        # against the solution. May need to change this if multiple tables
+        # will be changed in a single challenge one day.
+        primary_tname = problem.required_tables.split(',')[0]
+        stdt_table = primary_tname.replace('$STUDENTID$', str(student_id))
+        answ_table = primary_tname.replace('$STUDENTID$', str(student_id) + '_solution')
+        cursor.execute('SELECT * FROM ' + stdt_table)
+        _, stdtList = process_qs(cursor)
+        cursor.execute('SELECT * FROM ' + answ_table)
+        _, answList = process_qs(cursor)
+        passed = (stdtList == answList)
+      else:
+        cursor.execute(problem.answer_sql)
+        _, qsanswerList= process_qs(cursor)
+        passed = (qslist == qsanswerList)
+
+      # Fill in JSON response based on student's pass/failure
+      if passed:
           jsonresp['result'] = 'PASS';
-          # TODO: Include flag to show all tables view if no SELECT is in answer
           progress.passed = True
           progress.passed_dtstamp = datetime.now()
       else:
           jsonresp['result'] = 'FAIL';
+
       progress.save()
       Student.objects.get(id=student_id).update_rank()
       return JsonResponse(jsonresp)
