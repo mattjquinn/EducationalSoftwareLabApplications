@@ -255,13 +255,15 @@ def run_code(request):
       if problem.is_partitioned:
         # For partitioned tables, use the first table as the table to check
         # against the solution. May need to change this if multiple tables
-        # will be changed in a single challenge one day.
+        # will be changed in a single challenge one day. Also note that
+        # UPDATES/DELETEs will re-order the table and thus ORDER BY id
+        # is used; may be a problem in the future for tables without an id.
         primary_tname = problem.required_tables.split(',')[0]
         stdt_table = primary_tname.replace('$STUDENTID$', str(student_id))
         answ_table = primary_tname.replace('$STUDENTID$', str(student_id) + '_solution')
-        cursor.execute('SELECT * FROM ' + stdt_table)
+        cursor.execute('SELECT * FROM ' + stdt_table + ' ORDER BY id;')
         _, stdtList = process_qs(cursor)
-        cursor.execute('SELECT * FROM ' + answ_table)
+        cursor.execute('SELECT * FROM ' + answ_table + ' ORDER BY id;')
         _, answList = process_qs(cursor)
         passed = (stdtList == answList)
       else:
