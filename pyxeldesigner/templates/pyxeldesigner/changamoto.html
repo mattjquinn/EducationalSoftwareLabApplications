@@ -13,6 +13,7 @@
     <script src="{% static 'pyxeldesigner/js/popper.js-1.12.5-dist/umd/popper.min.js' %}"></script>
     <script src="{% static 'pyxeldesigner/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'pyxeldesigner/js/sha256.min.js' %}"></script>
+    <script src="{% static 'pyxeldesigner/js/diff.min.js' %}"></script>
 
     <style>
       #editor {
@@ -81,6 +82,9 @@
      #websocket-status.connected {
 	color: #64ff33;
      }
+     #diff-display {
+	white-space: pre-wrap;
+     }
    </style> 
   </head>
   <body>
@@ -104,6 +108,7 @@
     <div id="group_id" style="display: none">{{ group.id }}</div>
     <div id="problem_id" style="display: none">{{ progress.problem_id.id }}</div>
     <div id="goal-code" style="display: none">{{ progress.problem_id.solution }}</div>
+    <div id="checkpointed-code" style="display: none">{{ checkpointed_code }}</div>
 
     <div id="runCodeModal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
@@ -411,7 +416,7 @@ e.g. <code>pyxel.sound(0).set_effect('NFNF NVVS')</code></p>
     </div>
 
     <div id="submitModal" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Submit Your Code</h5>
@@ -420,6 +425,8 @@ e.g. <code>pyxel.sound(0).set_effect('NFNF NVVS')</code></p>
             </button>
           </div>
           <div class="modal-body">
+            <div id="diff-display"></div> 
+	    <br/>
 	    <label for="instructor-pwd" class="form-control-label">Instructor Password</label>
 	    <input type="password" class="form-control" id="instructor-pwd">
           </div>
@@ -513,15 +520,28 @@ e.g. <code>pyxel.sound(0).set_effect('NFNF NVVS')</code></p>
       });
 
       $('button#submit-code').click(function() {
-	var annot = editor.getSession().getAnnotations();
-	for (a of annot) {
-	  if (a.type == 'error') {
-	    $('#htmlErrorsModal').modal('show');
-	    return false;
-	  }
-	}
-	// If no errors, return true to allow instructor pwd modal to appear.
-	return true;
+	var old_code = $('#checkpointed-code').text();
+	var new_code = editor.getValue();
+	var color = '';
+	var span = null;
+
+	var diff = JsDiff.diffWords(old_code, new_code, {'newlineIsToken' : true});
+	var display = document.getElementById('diff-display');
+	var fragment = document.createDocumentFragment();
+
+	$('#diff-display').html('');
+	diff.forEach(function(part){
+	  color = part.added ? '#1d5a09' : part.removed ? '#680101' : '#808080';
+	  bgcolor = part.added ? '#64fa30' : part.removed ? '#f74040' : '#ffffff';
+	  span = document.createElement('span');
+	  span.style.color = color;
+	  span.style.backgroundColor = bgcolor;
+	  var val = part.value;
+	  span.appendChild(document.createTextNode(val));
+	  fragment.appendChild(span);
+	});
+
+	display.appendChild(fragment);
       });
 
       var submitCodeToServer = function() {
